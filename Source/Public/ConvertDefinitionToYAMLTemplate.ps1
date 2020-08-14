@@ -35,14 +35,10 @@ function ConvertDefinitionToYAMLTemplate {
         $pooltoadd.add('pool',$pool)
         $steps = Get-AzDoAPIToolsDefinitionSteps -InputDefinitions $Definition -projectname $projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
 
-        # $yamlTemplate | Add-Member -property $pooltoadd
-
         $yamlarray += $pooltoadd
         $yamlarray += $inputs
         $yamlarray += $triggers
         $yamlarray += $steps
-
-
 
         foreach ($yamlobject in $yamlarray) {
             $yamlobject.getEnumerator() | ForEach-Object{

@@ -15,8 +15,6 @@ function CreateAzdoAPIURL {
         
        $profile = Get-AzdoAPIToolsProfile -profilename $profilename
        $subdomain = $profile.Organization
-       #$projectname = $profile.TeamProject
-      #  $version = $profile.APIVersion
        
        $sb = New-Object System.Text.StringBuilder
  
