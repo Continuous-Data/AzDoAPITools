@@ -46,13 +46,15 @@ function ConvertTaskStepsTo-YAMLSteps {
                 
                 $yamlstep = [ordered]@{}
                 
+                $stepid = $step.task.id
+                $stepversion = $step.task.versionspec.split(".`*")[0] -as [int]
+                
                 if($step.task.definitionType -eq 'task'){
                     #####converting TaskID to YAML taskidentifier
-                    $stepid = $step.task.id 
-                    $taskversion = $step.task.versionspec.split(".`*")[0] -as [int]
-                    Write-verbose "version $taskversion found in $inputtype for task $stepid"
+                    
+                    Write-verbose "version $stepversion found in $inputtype for task $stepid"
 
-                    $yamltaskid = ConvertTaskIDTo-YAMLTaskIdentifier -InputTaskID $stepid -InputTaskVersion $taskversion -profilename $profilename
+                    $yamltaskid = ConvertTaskIDTo-YAMLTaskIdentifier -InputTaskID $stepid -InputTaskVersion $stepversion -profilename $profilename
 
                     $yamlstep.add('task',$yamltaskid)
 
@@ -77,7 +79,7 @@ function ConvertTaskStepsTo-YAMLSteps {
 
                 }elseif($step.task.definitionType -eq 'metaTask' -and $step.enabled -eq 'true'){
 
-                    $TGtemplate = Get-DefinitionsTaskGroupsByID -ID $step.task.id -ApiType 'TaskGroup' -Projectname $projectname -profilename $profilename
+                    $TGtemplate = Get-DefinitionsTaskGroupsByID -ID $stepid -TGVersion $stepversion -ApiType 'TaskGroup' -Projectname $projectname -profilename $profilename
 
                     if ($ExpandNestedTaskGroups.IsPresent) {
                         $nestedtaskgrouptasks = ConvertTaskStepsTo-YAMLSteps -profilename $profilename -Projectname $projectname -InputArray $TGTemplate -ExpandNestedTaskGroups -inputType $tgtemplate.type -parentinputtype $inputtype

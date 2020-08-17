@@ -42,7 +42,10 @@ function ConvertTGInputsTo-YamlTemplateInputs {
             $taskgrouptaskscount = $taskgrouptasks | Measure-Object | Select-Object -ExpandProperty count
             if($taskgrouptaskscount -ge 1){
                 foreach ($nestedtaskgrouptask in $taskgrouptasks) {
-                    $nestedtaskgroup = Get-DefinitionsTaskGroupsByID -apitype 'Taskgroup' -projectname $Projectname -profilename $profilename -id $nestedtaskgrouptask.task.id 
+                    $nestedtaskgroupid = $nestedtaskgrouptask.task.id
+                    $nestedtaskgroupversion = $nestedtaskgrouptask.task.versionspec.split(".`*")[0] -as [int]
+
+                    $nestedtaskgroup = Get-DefinitionsTaskGroupsByID -apitype 'Taskgroup' -projectname $Projectname -profilename $profilename -id $nestedtaskgroupid -TGVersion $nestedtaskgroupversion 
                     $nestedtaskgroupinputs = ConvertTGInputsTo-YamlTemplateInputs -profilename $profilename -Projectname $Projectname -InputArray $nestedtaskgroup -ExpandNestedTaskGroups
 
                     foreach ($nestedinput in $nestedtaskgroupinputs) {
