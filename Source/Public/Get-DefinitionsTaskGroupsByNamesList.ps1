@@ -37,21 +37,21 @@ function Get-DefinitionsTaskGroupsByNamesList {
     switch ($apitype) {
       BuildDefinition {
   
-  
-          $definitions = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1-preview'
-  
-          $filtereddefinitions = $definitions.value | Where-Object {$_.name -in $NamesList} 
-          $filtereddefinitions | ForEach-Object{
+        $definitions = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1-preview'
+
+        $filtereddefinitions = $definitions.value | Where-Object {$_.name -in $NamesList} 
+        $filtereddefinitions | ForEach-Object{
+          $filtereddefinitiondetails = CallAzDoAPI -url $_.url -method 'Get' -projectname $Projectname -profilename $profilename -version '5.1-preview'
+          # $filtereddefinitiondetails
             $hash = @{}
             $hash.Add('id', $($_.id))
             $hash.Add('name', $($_.name))
             $hash.Add('url', $($_.url))
             $hash.Add('type', $apitype)
+            $hash.Add('value',$filtereddefinitiondetails)
             
-    
             $return += [PSCustomObject]$hash
-          }
-  
+        }
       }
       ReleaseDefinition {
   
@@ -60,11 +60,13 @@ function Get-DefinitionsTaskGroupsByNamesList {
           $filtereddefinitions = $definitions.value | Where-Object {$_.name -in $NamesList} 
           
           $filtereddefinitions | ForEach-Object{
+            $filtereddefinitiondetails = CallAzDoAPI -url $_.url -method 'Get' -projectname $Projectname -profilename $profilename -version '5.1-preview'
             $hash = @{}
             $hash.Add('id', $($_.id))
             $hash.Add('name', $($_.name))
             $hash.Add('url', $($_.url))
             $hash.Add('type', $apitype)
+            $hash.Add('value',$filtereddefinitiondetails)
     
             $return += [PSCustomObject]$hash
           }
