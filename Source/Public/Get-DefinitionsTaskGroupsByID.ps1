@@ -4,6 +4,10 @@ function Get-DefinitionsTaskGroupsByID {
       [Parameter(mandatory=$true)]
       [String]
       $ID,
+      # Nameslist
+      [Parameter(mandatory=$false)]
+      [int]
+      $TGVersion,
       # Projectname
       [Parameter(mandatory=$true)]
       [string]
@@ -92,21 +96,40 @@ function Get-DefinitionsTaskGroupsByID {
             }else{
               $hash.Add('Preview','False')
             }
-            $hash.Add('highestversion',(Get-HighestTaskGroupVersion -TaskGroupObject $filteredproperties -Taskgroupid $_.id -includeTGPreview:$includeTGpreview.IsPresent))
+            if (!$TGVersion) {
+              $hash.Add('highestversion',(Get-HighestTaskGroupVersion -TaskGroupObject $filteredproperties -Taskgroupid $_.id -includeTGPreview:$includeTGpreview.IsPresent)) 
+            }
+            
             $hash.Add('value',$_)
 
             $return += [PSCustomObject]$hash
           }
 
-          if (-not $includeTGdrafts.IsPresent) {
-            $return = $return | Where-Object {$_.Draft -eq $False}
+          if ($TGVersion) {
+
+            $return = $return | Where-Object {$_.version -eq $TGVersion}
+
+            if (($return | Measure-Object | Select-Object -ExpandProperty count) -ne 1) {
+
+              Write-Error "version supplied $TGVersion not found for Task Group ID $ID"
+              
+              throw;
+            }
+            
+          }else{
+
+            if (-not $includeTGdrafts.IsPresent) {
+              $return = $return | Where-Object {$_.Draft -eq $False}
+            }
+            if (-not $includeTGpreview.IsPresent) {
+              $return = $return | Where-Object {$_.Preview -eq $False}
+            }
+            if (-not $AllTGVersions.IsPresent) {
+              $return = $return | Where-Object {$_.version -eq $_.highestversion}
+            }  
+
           }
-          if (-not $includeTGpreview.IsPresent) {
-            $return = $return | Where-Object {$_.Preview -eq $False}
-          }
-          if (-not $AllTGVersions.IsPresent) {
-            $return = $return | Where-Object {$_.version -eq $_.highestversion}
-          }  
+          
       }
       Default {Write-Error "unaccepted type found. Accepted values are BuildDefintion, ReleaseDefinition, TaskGroup"}
     }
