@@ -65,6 +65,7 @@ function Get-DefinitionsTaskGroupsByID {
             $hash.Add('name', $($_.name))
             $hash.Add('url', $($_.url))
             $hash.Add('type', $apitype)
+            $hash.Add('value',$_)
     
             $return += [PSCustomObject]$hash
           }
