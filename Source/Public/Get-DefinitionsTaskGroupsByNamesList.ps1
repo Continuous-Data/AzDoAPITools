@@ -95,7 +95,7 @@ function Get-DefinitionsTaskGroupsByNamesList {
             }else{
               $hash.Add('Preview','False')
             }
-            $hash.Add('highestversion',(Get-HighestTaskGroupVersion -TaskGroupObject $filteredproperties -Taskgroupid $_.id))
+            $hash.Add('highestversion',(Get-HighestTaskGroupVersion -TaskGroupObject $filteredproperties -Taskgroupid $_.id -includeTGPreview:$includeTGpreview.IsPresent))
             
             $hash.Add('value',$_)
             
