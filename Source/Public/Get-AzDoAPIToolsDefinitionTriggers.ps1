@@ -17,18 +17,23 @@ function Get-AzDoAPIToolsDefinitionTriggers {
 
                 if ($citriggers) {
                     $triggers = [ordered]@{}
-
-                    $branchtriggers = DefinitionInputIncludeExclude -inputs $citriggers.branchFilters
+                    if($citriggers.branchFilters){
+                        $branchtriggers = DefinitionInputIncludeExclude -inputs $citriggers.branchFilters
                     
-                    if ($branchtriggers.count -ge 1) {
-                        $triggers.add('branches', $branchtriggers)
+                        if ($branchtriggers.count -ge 1) {
+                            $triggers.add('branches', $branchtriggers)
+                        }
                     }
+                    
+                    if($citriggers.pathFilters){
+                        $pathtriggers = DefinitionInputIncludeExclude -inputs $citriggers.pathFilters
 
-                    $pathtriggers = DefinitionInputIncludeExclude -inputs $citriggers.pathFilters
+                        if ($pathtriggers.count -ge 1) {
+                            $triggers.add('paths' , $pathtriggers)
+                        }
 
-                    if ($pathtriggers.count -ge 1) {
-                        $triggers.add('paths' , $pathtriggers)
                     }
+                    
 
                     if ($citriggers.batchChanges -eq 'true') {
 
@@ -43,8 +48,6 @@ function Get-AzDoAPIToolsDefinitionTriggers {
                     
                     
                 }
-            }else{
-                throw;
             }
 
             return $returnedtriggerobject
