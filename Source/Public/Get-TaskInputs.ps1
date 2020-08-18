@@ -36,12 +36,15 @@ function Get-TaskInputs {
         $InputTaskObject.Inputs.PSObject.Properties | ForEach-Object{
             $regexpatternSingle = '(?<prefix>\$\()(?<FullVariable>(?<SingleVariable>\w+))(?<suffix>\))'
             $regexpatternDouble = '(?<prefix>\$\()(?<FullVariable>(?<DoubleVariable>(?<DoubleFirstPart>\w+)\.+(?<DoubleSecondPart>\w+)))(?<suffix>\))'
+            
             $inputname = $_.name
             $inputvalue = $_.value
+            
             if($InputTaskObject.task.definitionType -eq 'task'){
                 $defaultinput = $taskdefaultinputs | Where-Object {$_.name -eq $inputname}
                 $defaultinputvalue = $defaultinput.defaultValue
             }
+            
             if(( ($defaultinputvalue -ne $inputvalue) -or ($InputTaskObject.task.definitionType -ne 'task') ) ){
                 if ($inputtype -eq 'TaskGroup' -and $parentinputtype -ne 'BuildDefinition') {
                     switch -regex ($inputvalue) {
