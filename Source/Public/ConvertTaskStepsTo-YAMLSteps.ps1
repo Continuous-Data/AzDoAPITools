@@ -59,7 +59,7 @@ function ConvertTaskStepsTo-YAMLSteps {
                     $yamlstep.add('task',$yamltaskid)
 
                     ### Adding Other Task Properties to Step Object
-                    $taskproperties = Get-TaskProperties -InputTaskObject $step -propertiestoskip @('environment','inputs','task','AlwaysRun')
+                    $taskproperties = Get-TaskProperties -InputTaskObject $step -propertiestoskip @('environment','inputs','task','AlwaysRun','refName')
                     
                     $taskproperties.PSObject.Properties | ForEach-Object{
                         $yamlstep.add($_.name,$_.value)
