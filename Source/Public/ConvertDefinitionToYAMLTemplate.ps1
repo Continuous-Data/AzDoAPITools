@@ -28,6 +28,12 @@ function ConvertDefinitionToYAMLTemplate {
         $yamlTemplate = New-Object PSObject
         $yamlarray = @()
 
+        if ($definition.value.buildNumberFormat) {
+            $name = @{'name' = $definition.value.buildNumberFormat}
+        }else {
+            $name = @{'name' = '$(buildid)'}
+        }
+
         $inputs = Get-AzDoAPIToolsDefinitionVariables -InputDefinitions $Definition
         $triggers = Get-AzDoAPIToolsDefinitionTriggers -InputDefinitions $Definition
         $pool = Get-AzDoAPIToolsAgentPool -PoolURL $Definition.value.queue._links.self.href -agentidentifier $Definition.value.process.target.agentSpecification.identifier
@@ -35,6 +41,7 @@ function ConvertDefinitionToYAMLTemplate {
         $pooltoadd.add('pool',$pool)
         $steps = Get-AzDoAPIToolsDefinitionSteps -InputDefinitions $Definition -projectname $projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
 
+        $yamlarray += $name
         $yamlarray += $pooltoadd
         $yamlarray += $inputs
         $yamlarray += $triggers
