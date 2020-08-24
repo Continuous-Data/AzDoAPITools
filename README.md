@@ -2,20 +2,47 @@ AzDoAPITools
 
 # introduction
 
-AzDoAPITools is a project which stems from various automations I have done in the past in Azure DevOps. The published project on GitHub right now is all about converting classical pipelines to YAML pipelines. In the future you can expect other automations such as automatic branching / mass policy application etc. 
+AzDoAPITools is a project which stems from various automations which I have done in the past in Azure DevOps. The published project on GitHub right now is all about converting classical pipelines to YAML pipelines. In the future you can expect other automations such as automatic branching / mass policy application etc. 
 # Required Modules
 
 Powershell-YAML is required since well we want to output yaml files with this module. since Powershell does not have built-in functionality 
 
-# Usage
-1. 
-``
+# installation
+1. install Powershell-YAML module
+1. download AzDoAPITools from GitHub
+1. load the module from the BuildOutput folder
+1. Run Set-AzDOAPIToolsConfig to create a config file which is stored inside the %APPData% folder
 
 # Migration of Classical Pipelines & Task Groups to Yaml templates
 
+The main driver for combining this toolset was to automate the steps to convert classical pipelines (aka Build / Release Definitions) as well as Task Groups into YAML Pipelines / YAML Templates. This functionality mimics the 'View YAML' button inside steps / jobs. Difference being this will iterate over each step / task group and gather the results to a single as opposed to having to manually select each step and export by hand.
+
+It will also convert Definition specific attributes such as triggers, variables and options into a pre-packed yaml file for immediate use as a complete pipeline
+
+## Usage
+
+## Examples
+
 ## Assumptions
 
+Some assumptions had to be made while developing this functionality. Below is the explanation of these assumptions. 
+
 ### allow override variables --> Parameters
+
+Classical Pipelines know variables. One particular property of a variable in classical pipelines is the ability to override values for variables at queue time rendering them into sort of parameters. With YAML Pipelines we now have the option to actually declare parameters in our yaml file. variables (declared in a yaml file, not in definitions) are static. 
+
+The assumption is that if you have declared any variables with the property 'Allow value to be overwritten at queue time' you want them to be turned into YAML parameters.
+
+If the module is expanded and the adding of converted yaml pipeline definitions (not the *.yml file itself but its definition) becomes available i might consider exporting variables into the definition rather than the yaml file (see next assumption)
+
+### Definition specific properties are supposed to be inside YAML files rathen then in the YAML definition.
+
+Now this needs some explanation... With classical pipelines you need to declare variables / triggers inside the Build / Release definition. However with YAML Pipelines you have the option to declare these in two possible ways:
+
+- inside the YAML Pipeline definition (similar place as they would exist in a Build / Release definition)
+- inside the YAML Pipeline itself (the *.yml file). These would become the trigger: / variables: properties of the YAML file.
+
+The assumption from this tool is that users strive to use the best practices associated and that you want
 
 ### calls to other templates assume they are in the same folder as the calling YAML file.
 
