@@ -4,7 +4,7 @@ function Get-CronFromSchedule {
         # InputSchedule
         [Parameter(mandatory=$true)]
         [array]
-        $InputSchedule
+        $InputSchedules
     )
     
     begin {
@@ -24,7 +24,7 @@ function Get-CronFromSchedule {
     }
     
     process {
-        foreach ($schedule in $InputSchedule) {
+        foreach ($schedule in $InputSchedules) {
             if ($schedule.daysToBuild -eq 'all') {
                 $bitvalue = ($weekdays.Values | Measure-Object -Sum).Sum
             }elseif ($schedule.daysToBuild -in $weekdays.Keys) {
@@ -36,27 +36,24 @@ function Get-CronFromSchedule {
             if ($bitvalue -gt 0) {
                 $weekdays.getenumerator() | ForEach-Object{
                     if($_.value -band $bitvalue){
-                        # $_.key
+
                         $targetdayofweekint = $($weekdays.keys).indexOf($_.key)
                         $currentdayofweekint = (Get-date).DayOfWeek.value__
-                        
-                        $targetdate = (Get-Date).AddDays($currentdayofweekint + ($targetdayofweekint - $currentdayofweekint)).ToString('yyyy-MM-dd')
-                        $targettime = (Get-Date -Hour $schedule.startHours -Minute $schedule.startMinutes ).ToString('HH:mm:ss')
-                        
-                        $datetimetoconvert = Get-Date -Date "$targetdate $targettime" 
 
-                        $datetimetoconvertsingle = (Get-Date -Hour $schedule.startHours -Minute $schedule.startMinutes ).AddDays($currentdayofweekint + ($targetdayofweekint - $currentdayofweekint)).ToString('yyyy-MM-dd HH:mm:ss')
+                        $datetimetoconvert = Get-Date -Date (Get-Date -Hour $schedule.startHours -Minute $schedule.startMinutes -Second 00).AddDays($targetdayofweekint - $currentdayofweekint).ToString('yyyy-MM-dd HH:mm:ss')
                         
                         $SourceTimezone = [System.TimeZoneInfo]::FindSystemTimeZoneById($schedule.timezoneid)
+                        
+                        if($SourceTimezone.SupportsDaylightSavingTime -eq $true){
+                            $datetimetoconvert = $datetimetoconvert.AddHours(1)
+                        }
+
                         $utcdatetimeobject = [System.TimeZoneInfo]::ConvertTimeToUtc($datetimetoconvert, $SourceTimezone)
-                        # $utcdatetimeobject
+
                 
                         $schedulehour = $utcdatetimeobject.Hour
                         $scheduleminute = $utcdatetimeobject.Minute
                         $scheduledaysofweek += $utcdatetimeobject.DayOfWeek.value__
-                        # $($weekdays.keys).indexOf("Saturday") 
-                        # $utcdatetimeobject.DayOfWeek.value__
-                        #### timezone "India Standard Time" +5:30
                     }
                 }
                 
@@ -65,8 +62,8 @@ function Get-CronFromSchedule {
             }
         }
     }
-    
-    end {
-        
+
+    end{
+
     }
 }
