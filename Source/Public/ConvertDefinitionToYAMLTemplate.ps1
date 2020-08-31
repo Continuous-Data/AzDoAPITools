@@ -36,16 +36,35 @@ function ConvertDefinitionToYAMLTemplate {
 
         $inputs = Get-AzDoAPIToolsDefinitionVariables -InputDefinitions $Definition
         $triggers = Get-AzDoAPIToolsDefinitionTriggers -InputDefinitions $Definition
+        $schedules = Get-AzDoAPIToolsDefinitionSchedules -InputDefinitions $Definition
         $pool = Get-AzDoAPIToolsAgentPool -PoolURL $Definition.value.queue._links.self.href -agentidentifier $Definition.value.process.target.agentSpecification.identifier
         $pooltoadd = @{}
         $pooltoadd.add('pool',$pool)
         $steps = Get-AzDoAPIToolsDefinitionSteps -InputDefinitions $Definition -projectname $projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
+        
+        if ($name) {
+            $yamlarray += $name
+        }
+        
+        if ($pooltoadd) {
+            $yamlarray += $pooltoadd
+        }
 
-        $yamlarray += $name
-        $yamlarray += $pooltoadd
-        $yamlarray += $inputs
-        $yamlarray += $triggers
-        $yamlarray += $steps
+        if ($inputs) {
+            $yamlarray += $inputs
+        }
+        
+        if ($triggers) {
+            $yamlarray += $triggers
+        }
+        
+        if ($schedules) {
+            $yamlarray += $schedules
+        }
+
+        if ($steps) {
+            $yamlarray += $steps
+        }
 
         foreach ($yamlobject in $yamlarray) {
             $yamlobject.getEnumerator() | ForEach-Object{
