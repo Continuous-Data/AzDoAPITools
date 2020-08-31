@@ -1,8 +1,8 @@
 # Migration of Classical Pipelines & Task Groups to Yaml templates
 
-The main driver for combining this toolset was to automate the steps to convert classical pipelines (aka Build / Release Definitions) as well as Task Groups into YAML Pipelines / YAML Templates. This functionality mimics the 'View YAML' button inside steps / jobs. Difference being this will iterate over each step / task group and gather the results to a single as opposed to having to manually select each step and export by hand.
+The main driver for combining this toolset was to automate the steps to convert classical pipelines (aka Build / Release Definitions) as well as Task Groups into YAML Pipelines / YAML Templates. This functionality mimics the 'View YAML' button inside steps / jobs. Difference being this will iterate over each step / task group and gather the results to a single yml file as opposed to having to manually select each step and export by hand.
 
-It will also convert Definition specific attributes such as triggers, variables and options into a pre-packed yaml file for immediate use as a complete pipeline
+It will also convert Definition specific attributes such as triggers, schedules, variables and options into a pre-packed yaml file for immediate use as a complete pipeline. In the future it will also support importing a converted YAML pipeline as a pipeline definition.
 
 ## Usage
 
@@ -11,6 +11,16 @@ It will also convert Definition specific attributes such as triggers, variables 
 ## Assumptions
 
 Some assumptions had to be made while developing this functionality. Below is the explanation of these assumptions. 
+
+### Schedules are converted to UTC notation disregarding DST
+
+When converting schedules from the buil-in GUI editor to CRON notation inside YAML I had to follow the guidelines which are stated [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#migrating-from-the-classic-editor). These instructions tells us that schedules in YAML pipelines are expected as CRON notation, but more notably in UTC format. In the classical pipeline you can determine in which timezone OffSet you want to run the schedule. In YAML there is no such way and it expects a UTC based notation.
+
+DayLightSaving corrections are ignored by YAML pipelines. e.g CEST will not be +2 based on UTC but rather +1 (based of the non-DST timezone CET). Converted schedules are formatted as UTC w/o DST correction. This might the schedule in the YAML file has a different day / time as configured in the GUI pipeline.
+
+e.g. Schedule on Tokyo Time (UTC+9) on Saturday at 1:00 (AM) means it needs to be corrected with -9 hours to be in UTC. Your converted YAML Schedule in CRON will read Friday 16:00 (PM) (0 16 * * 5)
+
+similarly if you have a UTC - x timezone scheduled near the end of your timezones day it will be planned on the next day(s).
 
 ### allow override variables --> Parameters
 
@@ -67,6 +77,12 @@ Currently Microsoft does not allow for manual determined stages in YAML Pipeline
 ## ToDo list
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority i gave them.
+
+### Converted parameters from queue time variables are called as variable instead of a parameter
+
+When converting variables to parameters which have the AllowOveride property and are thus settable at queue time are put into the parameters section of the YAML file.
+
+However when calling such parameter inside a step input it is being referred to as $(variablename) rather than $(parameters.variablename) / ${{parameters.variablename}}. This means an overhaul of the Get-Inputs function and rethink the logic behind it.
 
 ### Release Definitions
 
