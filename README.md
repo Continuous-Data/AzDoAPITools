@@ -1,5 +1,3 @@
-AzDoAPITools
-
 # introduction
 
 AzDoAPITools is a project which stems from various automations which I have done in the past in Azure DevOps. The published project on GitHub right now is all about converting classical pipelines to YAML pipelines. In the future you can expect other automations such as automatic branching / mass policy application etc. 
