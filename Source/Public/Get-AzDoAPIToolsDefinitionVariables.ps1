@@ -31,7 +31,7 @@ function Get-AzDoAPIToolsDefinitionVariables {
                         
                     }
                     else{
-                        Write-Verbose "variable $($var.name) is either settable at queue time or secret. not exporting to yaml"
+                        Write-Verbose "variable $($var.name) is secret. not exporting to yaml. Please bear in mind to add this variable yourself"
                     }
                 }
             }
