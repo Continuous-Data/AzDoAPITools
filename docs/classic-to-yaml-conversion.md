@@ -59,14 +59,15 @@ My suggestion is you use the built-in functionality in the Definition settings o
 
 ### incompatible folders (predefined variables)
 
-This predominantly concerns Tasks / Task Groups which are working in the Release Definition area. In YAML Pipelines all pipelines operate in the build area. Therefor Artifacts are downloaded to the path $(pipeline.workspace)\\<Artifact ALias> Which translates to <agentworkdir>\\<Artifact Alias>. In Release definitions this would have been $(Release.ArtifactsDirectory) which tranlates to <agentworkdir>\\a\\<artifact Alias>. Thie means that all tasks that expect to work from the \a directory will not automatically work. Predefined variables which are affected are:
+This predominantly concerns Tasks / Task Groups which are working in the Release Definition area. In YAML Pipelines all pipelines operate in the build area. Therefor Artifacts are downloaded to the path $(pipeline.workspace)\\<Artifact ALias> directory Which translates to <agentworkdir>\\<Artifact Alias>. In Release definitions this would have been $(Release.ArtifactsDirectory) which tranlates to <agentworkdir>\\a\\<artifact Alias>. Thie means that all tasks that expect to work from the \a directory will not automatically work. Predefined variables which are affected are:
 
 - $(System.defaultworkingdirectory)
 - $(Release.ArtifactsDirectory)
+- $(Agent.ReleaseDirectory)
 
 Also this means that predefined variables which start with release.* will not work. 
 
-Since it is impossible for me to determine which task groups are used for which purpose in your use-case i opted for not converting these affected inputs to the $(pipeline.workspace). This might mean that your converted YAML pipeline will fail on 
+Since it is impossible for me to determine which task groups are used for which purpose in your use-case i opted for not converting these affected inputs to the $(pipeline.workspace). This might mean that your converted YAML pipeline will fail on folder errors / file not found errors.
 
 If there is enough interest I can add a switch which does this for you though. Still it would mean manually flagging Task Groups which would need this behavior. This will not fix the default behavior of some of your 3rd party extensions / tasks. some of these will prefix $(system.defaultworkingdirectory) if you provide a relative path as an input to a task. These will have to be fixed by the original author. in most tasks if you prefix $(pipeline.workspace)\\<relative path> it will work most of the times.
 
@@ -77,6 +78,10 @@ Currently Microsoft does not allow for manual determined stages in YAML Pipeline
 ## ToDo list
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority i gave them.
+
+### Apply resource checkout options
+
+stuff like checkout: clean, LFS and other git options which are specified in a build definitions sources part needs to be translated to steps - checkout options.
 
 ### Converted parameters from queue time variables are called as variable instead of a parameter
 
