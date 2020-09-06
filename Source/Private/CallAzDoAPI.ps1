@@ -42,9 +42,7 @@ function CallAzDoAPI {
 
        $params.Add('TimeoutSec', 30)
 
-
-       $security = Create-BasicAuthParam -Name 'ServiceAccount' -PAT $pat
-       $params.Add('Headers', @{Authorization = "$security" })
+       $params.Add('Headers', @{Authorization = "Basic $pat" })
 
        $extra = 'profile', 'profilename', 'Area', 'Id', 'Url', 'Resource','config','profile','subdomain','projectname','version','pat'
        foreach ($e in $extra) { $params.Remove($e) | Out-Null }

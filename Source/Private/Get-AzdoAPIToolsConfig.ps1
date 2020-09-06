@@ -7,7 +7,7 @@ function Get-AzdoAPIToolsConfig {
     )
 
     if(!$configfilepath){
-        Write-verbose "No `$configfile parameter supplier. reverting to default path."
+        Write-verbose "No `$configfilepath parameter supplier. setting to default path."
         $configfilepath = "{0}\AzDoAPITools\config.json" -f $env:appdata
         # $configfilepath = "$((Get-Item $PSScriptRoot).Parent.FullName)\config\config.json"
     }
@@ -17,6 +17,11 @@ function Get-AzdoAPIToolsConfig {
 
         return $configJSON
     }else{
-        Write-Error "no configfile found at $configfilepath. please run Set-AzDoAPIToolsConfig to create a profile"
+        if (confirm "Would you like to create a new config file in $configfilepath ?") {
+            Set-AzDoAPIToolsConfig -configfilepath $configfilepath
+        }else{
+            Write-Error "no configfile found at $configfilepath. please run Set-AzDoAPIToolsConfig to create a profile"
+        }
+    
     }
 }
