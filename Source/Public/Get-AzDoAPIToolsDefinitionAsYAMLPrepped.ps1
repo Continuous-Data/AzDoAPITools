@@ -44,7 +44,7 @@ function Get-AzDoAPIToolsDefinitionAsYAMLPrepped {
         $pool = Get-AzDoAPIToolsAgentPool -PoolURL $Definition.value.queue._links.self.href -agentidentifier $Definition.value.process.target.agentSpecification.identifier
         $pooltoadd = @{}
         $pooltoadd.add('pool',$pool)
-        $steps = Get-AzDoAPIToolsDefinitionSteps -InputDefinitions $Definition -projectname $projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
+        $steps = Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped -InputDefinitions $Definition -projectname $projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
         
         if ($name) {
             $yamlarray += $name
