@@ -54,7 +54,7 @@ function ConvertTaskStepsTo-YAMLSteps {
                     
                     Write-verbose "version $stepversion found in $inputtype for task $stepid"
 
-                    $yamltaskid = ConvertTaskIDTo-YAMLTaskIdentifier -InputTaskID $stepid -InputTaskVersion $stepversion -profilename $profilename
+                    $yamltaskid = Convert-TaskIDToYAMLTaskIdentifier -InputTaskID $stepid -InputTaskVersion $stepversion -profilename $profilename
 
                     $yamlstep.add('task',$yamltaskid)
 

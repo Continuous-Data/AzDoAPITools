@@ -1,4 +1,4 @@
-function ConvertTaskIDTo-YAMLTaskIdentifier {
+function Convert-TaskIDToYAMLTaskIdentifier {
     param (
         # TaskID
         [Parameter(Mandatory=$true)]
