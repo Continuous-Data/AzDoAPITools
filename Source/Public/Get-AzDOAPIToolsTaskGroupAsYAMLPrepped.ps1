@@ -1,4 +1,4 @@
-function ConvertTaskGroupToYAMLTemplate {
+function Get-AzDOAPIToolsTaskGroupAsYAMLPrepped {
     param (
         # Parameter help description
         [Parameter(mandatory=$true)]
@@ -19,7 +19,11 @@ function ConvertTaskGroupToYAMLTemplate {
         # future switch for expanding nested taskgroups
         [Parameter(mandatory=$false)]
         [switch]
-        $ExpandNestedTaskGroups
+        $ExpandNestedTaskGroups,
+        # Switch to output file instead of retruning an object
+        [Parameter(mandatory=$false)]
+        [switch]
+        $Outputasfile
     )
 
     Import-Module powershell-yaml
@@ -34,13 +38,16 @@ function ConvertTaskGroupToYAMLTemplate {
         $yamlTemplate | Add-Member -NotePropertyName 'parameters' -NotePropertyValue $inputs
         $yamlTemplate | Add-Member -NotePropertyName 'steps' -NotePropertyValue $steps
         
-        if (!(Test-Path $outputpath)) {
-            if(Confirm "$outputpath not detected. Do you want to create it"){
-                New-Item -path $OutputPath -ItemType 'Directory' | Out-Null
+        if ($outputasfile.IsPresent) {
+            if (!$outputpath) {
+                Write-Error "You have used the -Outputfile switch without mentioning OutputPath"
+            }else{
+                Convert-YamlObjectToYAMLFile -InputObject $yamlTemplate -outputpath $OutputPath -Outputfilename "$($taskgroup.name).yml"
             }
+            
+        }else {
+            return $yamlTemplate
         }
-        
-        $yamlTemplate | ConvertTo-Yaml | Out-File "$outputpath\$($taskgroup.name).yml" -encoding utf8
     }
 
     

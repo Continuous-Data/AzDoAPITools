@@ -1,4 +1,4 @@
-function ConvertDefinitionToYAMLTemplate {
+function Get-AzDoAPIToolsDefinitionAsYAMLPrepped {
     param (
         # Parameter help description
         [Parameter(mandatory=$true)]
@@ -13,13 +13,17 @@ function ConvertDefinitionToYAMLTemplate {
         [string]
         $profilename,
         # OutputPath
-        [Parameter(mandatory=$true)]
+        [Parameter(mandatory=$false)]
         [string]
         $OutputPath,
-        # future switch for expanding nested taskgroups
+        # switch for expanding nested taskgroups
         [Parameter(mandatory=$false)]
         [switch]
-        $ExpandNestedTaskGroups
+        $ExpandNestedTaskGroups,
+        # Switch to output file instead of retruning an object
+        [Parameter(mandatory=$false)]
+        [switch]
+        $Outputasfile
     )
 
     Import-Module powershell-yaml
@@ -73,13 +77,15 @@ function ConvertDefinitionToYAMLTemplate {
             }
         }
         
-
-        if (!(Test-Path $outputpath)) {
-            if(Confirm "$outputpath not detected. Do you want to create it"){
-                New-Item -path $OutputPath -ItemType 'Directory' | Out-Null
+        if ($outputasfile.IsPresent) {
+            if (!$outputpath) {
+                Write-Error "You have used the -Outputfile switch without mentioning OutputPath"
+            }else{
+                Convert-YamlObjectToYAMLFile -InputObject $yamlTemplate -outputpath $OutputPath -Outputfilename "$($Definition.name).yml"
             }
+            
+        }else {
+            return $yamlTemplate
         }
-        
-        $yamlTemplate | ConvertTo-Yaml | Out-File "$outputpath\$($Definition.name).yml" -encoding utf8
     } 
 }
