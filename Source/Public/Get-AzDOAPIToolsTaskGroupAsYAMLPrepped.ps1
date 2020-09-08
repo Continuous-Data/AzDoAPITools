@@ -42,7 +42,7 @@ function Get-AzDOAPIToolsTaskGroupAsYAMLPrepped {
             if (!$outputpath) {
                 Write-Error "You have used the -Outputfile switch without mentioning OutputPath"
             }else{
-                Convert-YamlObjectToYAMLFile -InputObject $yamlTemplate -outputpath $OutputPath -Outputfilename "$($taskgroup.name).yml"
+                Convert-AzDoAPIToolsYamlObjectToYAMLFile -InputObject $yamlTemplate -outputpath $OutputPath -Outputfilename "$($taskgroup.name).yml"
             }
             
         }else {

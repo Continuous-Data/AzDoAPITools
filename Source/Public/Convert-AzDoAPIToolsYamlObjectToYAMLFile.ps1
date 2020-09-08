@@ -1,4 +1,4 @@
-function Convert-YamlObjectToYAMLFile {
+function Convert-AzDoAPIToolsYamlObjectToYAMLFile {
     [CmdletBinding()]
     param (
         # Parameter help description
