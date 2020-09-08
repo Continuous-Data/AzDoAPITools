@@ -15,7 +15,7 @@ function Set-AzdoAPIToolsConfig {
             Write-Verbose "Found an existing configfile in $configfilepath. loading it"
             $existingconfig = Get-AzdoAPIToolsConfig -configfilepath $configfilepath
             
-            if (confirm "Do you want to overwrite the existing config in [$configfilepath] (Y) or add to / replace in existing config (N)?") {
+            if (Get-Confirmation "Do you want to overwrite the existing config in [$configfilepath] (Y) or add to / replace in existing config (N)?") {
                 $OutConfig = Get-AzDoAPIToolsConfigDetails -new
             }else{
                 $config = Get-AzDoAPIToolsConfigDetails | ConvertFrom-Json

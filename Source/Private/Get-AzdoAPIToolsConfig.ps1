@@ -20,7 +20,7 @@ function Get-AzdoAPIToolsConfig {
         
         Write-Host "No config file found at $configfilepath"
 
-        if (confirm "Would you like to create a new config file in $configfilepath ?") {
+        if (Get-Confirmation "Would you like to create a new config file in $configfilepath ?") {
             Set-AzDoAPIToolsConfig -configfilepath $configfilepath
             
             $configJSON = Import-JSON -JSONFile $configfilepath

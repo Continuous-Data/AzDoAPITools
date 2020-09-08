@@ -1,4 +1,4 @@
-function Confirm ( [string] $message )
+function Get-Confirmation ( [string] $message )
 {
     do
     { 
