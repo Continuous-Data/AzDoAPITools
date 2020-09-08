@@ -1,4 +1,4 @@
-function ConvertTGInputsTo-YamlTemplateInputs {
+function Convert-TGInputsToYamlTemplateInputs {
     param (
     # input array
     [Parameter()]
@@ -46,7 +46,7 @@ function ConvertTGInputsTo-YamlTemplateInputs {
                     $nestedtaskgroupversion = $nestedtaskgrouptask.task.versionspec.split(".`*")[0] -as [int]
 
                     $nestedtaskgroup = Get-AzDoAPIToolsDefinitionsTaskGroupsByID -apitype 'Taskgroup' -projectname $Projectname -profilename $profilename -id $nestedtaskgroupid -TGVersion $nestedtaskgroupversion 
-                    $nestedtaskgroupinputs = ConvertTGInputsTo-YamlTemplateInputs -profilename $profilename -Projectname $Projectname -InputArray $nestedtaskgroup -ExpandNestedTaskGroups
+                    $nestedtaskgroupinputs = Convert-TGInputsToYamlTemplateInputs -profilename $profilename -Projectname $Projectname -InputArray $nestedtaskgroup -ExpandNestedTaskGroups
 
                     foreach ($nestedinput in $nestedtaskgroupinputs) {
                         if ($nestedinput.name -notin $InputsArray.name) {

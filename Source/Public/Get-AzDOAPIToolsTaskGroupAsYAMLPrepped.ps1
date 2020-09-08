@@ -31,7 +31,7 @@ function Get-AzDoAPIToolsTaskGroupAsYAMLPrepped {
 
         $yamlTemplate = [PSCustomObject]@{}
 
-        $inputs = ConvertTGInputsTo-YamlTemplateInputs -InputArray $TaskGroup -Projectname $Projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
+        $inputs = Convert-TGInputsToYamlTemplateInputs -InputArray $TaskGroup -Projectname $Projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent
         $steps = Convert-TaskStepsToYAMLSteps -InputArray $TaskGroup -projectname $projectname -profilename $profilename -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.IsPresent -inputtype $TaskGroup.type
 
 
