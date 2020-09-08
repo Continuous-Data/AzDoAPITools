@@ -10,7 +10,7 @@ It will also convert Definition specific attributes such as triggers, schedules,
 
 ## Assumptions
 
-Some assumptions had to be made while developing this functionality. Below is the explanation of these assumptions. 
+Some assumptions had to be made while developing this functionality. Below is the explanation of these assumptions.
 
 ### Schedules are converted to UTC notation disregarding DST
 
@@ -18,19 +18,19 @@ When converting schedules from the buil-in GUI editor to CRON notation inside YA
 
 DayLightSaving corrections are ignored by YAML pipelines. e.g CEST will not be +2 based on UTC but rather +1 (based of the non-DST timezone CET). Converted schedules are formatted as UTC w/o DST correction. This might the schedule in the YAML file has a different day / time as configured in the GUI pipeline.
 
-e.g. Schedule on Tokyo Time (UTC+9) on Saturday at 1:00 (AM) means it needs to be corrected with -9 hours to be in UTC. Your converted YAML Schedule in CRON will read Friday 16:00 (PM) (0 16 * * 5)
+e.g. Schedule on Tokyo Time (UTC+9) on Saturday at 1:00 (AM) means it needs to be corrected with -9 hours to be in UTC. Your converted YAML Schedule in CRON will read Friday 16:00 (PM) (0 16 \* \* 5)
 
 similarly if you have a UTC - x timezone scheduled near the end of your timezones day it will be planned on the next day(s).
 
-### allow override variables --> Parameters
+### allow override variables --) Parameters
 
-Classical Pipelines know variables. One particular property of a variable in classical pipelines is the ability to override values for variables at queue time rendering them into sort of parameters. With YAML Pipelines we now have the option to actually declare parameters in our yaml file. variables (declared in a yaml file, not in definitions) are static. 
+Classical Pipelines know variables. One particular property of a variable in classical pipelines is the ability to override values for variables at queue time rendering them into sort of parameters. With YAML Pipelines we now have the option to actually declare parameters in our yaml file. variables (declared in a yaml file, not in definitions) are static.
 
 The assumption is that if you have declared any variables with the property 'Allow value to be overwritten at queue time' you want them to be turned into YAML parameters.
 
 If the module is expanded and the adding of converted yaml pipeline definitions (not the *.yml file itself but its definition) becomes available i might consider exporting variables into the definition rather than the yaml file (see next assumption)
 
-### Definition specific properties are supposed to be inside YAML files rathen then in the YAML definition.
+### Definition specific properties are supposed to be inside YAML files rathen then in the YAML definition
 
 Now this needs some explanation... With classical pipelines you need to declare variables / triggers inside the Build / Release definition. However with YAML Pipelines you have the option to declare these in two possible ways:
 
@@ -39,7 +39,7 @@ Now this needs some explanation... With classical pipelines you need to declare 
 
 The assumption from this tool is that users strive to use the best practices associated and that you want variables / triggers for your definition inside the yaml file rather than in the definition.
 
-### calls to other templates assume they are in the same folder as the calling YAML file.
+### calls to other templates assume they are in the same folder as the calling YAML file
 
 When converting Task Groups to YAML Templates they will be exported to a single output folder. If you have nested task groups or definitions caling task groups (and not using the ExpandNestedTaskgroups switch) the tool assumes the called / nested task group is in the same folder as its caller / parent. If you want to have this in a different way and use an external template repository you should add the resource for it, the path to where you store them and the @alias suffix yourself. When i have time I will attempt to add settings which will do these prefixes / suffixes based on a json file.
 
@@ -53,27 +53,27 @@ If your task group contains a task which does not work with YAML pipelines expec
 
 ### Secret variables
 
-If you have any secret variables inside your Build / Release Definitions they will not be exported. Any calls or uses of these variables (in the $() format will be converted.). Since YAML is clear text it would not be advisable to store these secrets. Besides the default behavior of Azure DevOps is to not copy these over when cloning or importing a Build / Release Definition I decided not to convert them (technically also impossible). 
+If you have any secret variables inside your Build / Release Definitions they will not be exported. Any calls or uses of these variables (in the $() format will be converted.). Since YAML is clear text it would not be advisable to store these secrets. Besides the default behavior of Azure DevOps is to not copy these over when cloning or importing a Build / Release Definition I decided not to convert them (technically also impossible).
 
 My suggestion is you use the built-in functionality in the Definition settings or Azure Keyvault to store these secrets instead. If you name them similar as your original variables they will be accessible to converted tasks.
 
 ### incompatible folders (predefined variables)
 
-This predominantly concerns Tasks / Task Groups which are working in the Release Definition area. In YAML Pipelines all pipelines operate in the build area. Therefor Artifacts are downloaded to the path $(pipeline.workspace)\\<Artifact ALias> directory Which translates to <agentworkdir>\\<Artifact Alias>. In Release definitions this would have been $(Release.ArtifactsDirectory) which tranlates to <agentworkdir>\\a\\<artifact Alias>. Thie means that all tasks that expect to work from the \a directory will not automatically work. Predefined variables which are affected are:
+This predominantly concerns Tasks / Task Groups which are working in the Release Definition area. In YAML Pipelines all pipelines operate in the build area. Therefor Artifacts are downloaded to the path $(pipeline.workspace)\\(Artifact ALias)  directory Which translates to (agentworkdir)\\(Artifact Alias). In Release definitions this would have been $(Release.ArtifactsDirectory) which tranlates to (agentworkdir)\\a\\(artifact Alias). Thie means that all tasks that expect to work from the \a directory will not automatically work. Predefined variables which are affected are:
 
 - $(System.defaultworkingdirectory)
 - $(Release.ArtifactsDirectory)
 - $(Agent.ReleaseDirectory)
 
-Also this means that predefined variables which start with release.* will not work. 
+Also this means that predefined variables which start with release.* will not work.
 
 Since it is impossible for me to determine which task groups are used for which purpose in your use-case i opted for not converting these affected inputs to the $(pipeline.workspace). This might mean that your converted YAML pipeline will fail on folder errors / file not found errors.
 
-If there is enough interest I can add a switch which does this for you though. Still it would mean manually flagging Task Groups which would need this behavior. This will not fix the default behavior of some of your 3rd party extensions / tasks. some of these will prefix $(system.defaultworkingdirectory) if you provide a relative path as an input to a task. These will have to be fixed by the original author. in most tasks if you prefix $(pipeline.workspace)\\<relative path> it will work most of the times.
+If there is enough interest I can add a switch which does this for you though. Still it would mean manually flagging Task Groups which would need this behavior. This will not fix the default behavior of some of your 3rd party extensions / tasks. some of these will prefix $(system.defaultworkingdirectory) if you provide a relative path as an input to a task. These will have to be fixed by the original author. in most tasks if you prefix $(pipeline.workspace)\\(relative path) it will work most of the times.
 
 ### Manual stages in Release Definitions
 
-Currently Microsoft does not allow for manual determined stages in YAML Pipelines. In Classical Pipelines it was possible to add multiple stages to your release definition which would not automatically trigger when a release was started. Instead you had to open up the newly created release and 'Deploy' to that stage. In YAML pipeline such a mechanic does not exist (yet). This means that if you make use of these manually triggered stages in your release definitions they will be exported as separate stages in the converted YAML file. However the behavior of YAML Pipelines is that all stages will run in parallel unless they have the dependsOn property. and even if that was declared it would still mean the stage would automatically execute. The only measure to prevent this would be to use manual approvals on an Environment. however this is still not a solution to this limitation. My suggestion is not to convert those classical pipelines to YAML or find a way to parameterize your pipeline in combination with say conditions to mimic the intended behavior. This is clearly out of the scope of this tool since we do not want to make too much assumptions in how the user wants its target produce. 
+Currently Microsoft does not allow for manual determined stages in YAML Pipelines. In Classical Pipelines it was possible to add multiple stages to your release definition which would not automatically trigger when a release was started. Instead you had to open up the newly created release and 'Deploy' to that stage. In YAML pipeline such a mechanic does not exist (yet). This means that if you make use of these manually triggered stages in your release definitions they will be exported as separate stages in the converted YAML file. However the behavior of YAML Pipelines is that all stages will run in parallel unless they have the dependsOn property. and even if that was declared it would still mean the stage would automatically execute. The only measure to prevent this would be to use manual approvals on an Environment. however this is still not a solution to this limitation. My suggestion is not to convert those classical pipelines to YAML or find a way to parameterize your pipeline in combination with say conditions to mimic the intended behavior. This is clearly out of the scope of this tool since we do not want to make too much assumptions in how the user wants its target produce.
 
 ## ToDo list
 
@@ -95,7 +95,7 @@ I wanted to push this Module to GitHub and make it publicly available knowing th
 
 ### Adding converted Pipelines as actual definitions to Azure DevOps
 
-right now the goal is to produce *.yml files which then can be used to create a new pipeline in Azure DevOps via the 'New Pipeline' button. This will create a 'Build Definition' on the background which points to the created *.yml file. It would be awesome if the user would not need to perform this manual step and have the already converted classical pipeline be automatically added as a new definition into Azure DevOps.
+right now the goal is to produce \*.yml files which then can be used to create a new pipeline in Azure DevOps via the 'New Pipeline' button. This will create a 'Build Definition' on the background which points to the created \*.yml file. It would be awesome if the user would not need to perform this manual step and have the already converted classical pipeline be automatically added as a new definition into Azure DevOps.
 
 ### Variables as Definition variables rather than YAML Template variables
 
