@@ -2,7 +2,7 @@ function CallAzDoAPI {
    [CmdletBinding()]
     param(
        [Parameter(ValueFromPipeline = $true)]
-      #  [Object]$profile,
+      #  [Object]$configprofile,
        [string]$profilename,
        [string]$area,
        [string]$resource,
@@ -30,8 +30,8 @@ function CallAzDoAPI {
           $Url = CreateAzdoAPIURL @buildUriParams
        }
 
-       $profile = Get-AzdoAPIToolsProfile -profilename $profilename
-       $pat = $profile.pat
+       $configprofile = Get-AzdoAPIToolsProfile -profilename $profilename
+       $pat = $configprofile.pat
 
        if ($body) {
           Write-Verbose "Body $body"

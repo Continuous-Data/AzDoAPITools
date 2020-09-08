@@ -14,7 +14,7 @@ function Get-AzdoAPIToolsProfile {
     process{
 
         if(!$configfile){
-            Write-verbose "No `$configfile parameter supplied. attempting to grab it from profile"
+            Write-verbose "No `$configfile parameter supplied. attempting to grab it from config"
     
             $configfile = Get-AzdoAPIToolsConfig
         }
@@ -22,16 +22,16 @@ function Get-AzdoAPIToolsProfile {
         if ($configfile.profiles) {
             if ($profilename) {
                 Write-verbose "Searching profiles for $profilename"
-                $profile = $configfile.profiles | Where-Object {$_.profilename -eq $profilename}
+                $configprofile = $configfile.profiles | Where-Object {$_.profilename -eq $profilename}
 
 
             }else{
                 Write-Verbose "Returning first profile found"
-                $profile = $configfile.profiles | Select-Object -First 1
+                $configprofile = $configfile.profiles | Select-Object -First 1
             }
 
-            if ($profile) {
-                return $profile
+            if ($configprofile) {
+                return $configprofile
             }else{
                 Write-Error "Unable to find $profilename in configfile provided"
                 throw;
