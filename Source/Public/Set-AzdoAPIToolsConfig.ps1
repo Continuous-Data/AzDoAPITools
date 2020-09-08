@@ -1,34 +1,21 @@
 function Set-AzdoAPIToolsConfig {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $false)] $configfilepath,
-        [Parameter(Mandatory = $false)] $configfilename
+        [Parameter(Mandatory = $false)] $configfilepath
     )
     
     process {
 
         if(!$configfilepath){
             Write-verbose "No `$configfilepath parameter supplier. setting to default path."
-            $configfilepath = "{0}\AzDoAPITools\" -f $env:appdata
+            $configfilepath = "{0}\AzDoAPITools\config.json" -f $env:appdata
         }
 
-        if(!$configfilename){
-            Write-verbose "No `$configfilename parameter supplier. setting to default filename."
-            $configfilename = "config.json"
-        }
-
-        if (($configfilepath -match '\\$') -eq $false) {
-            $configfilepath = "$configfilepath\"
-        }
-
-        $configfilefullname = "$configfilepath$configfilename"
-
-
-        if (Test-Path $configfilefullname) {
-            Write-Verbose "Found an existing configfile in $configfilefullname. loading it"
-            $existingconfig = Get-AzdoAPIToolsConfig -configfilepath $configfilefullname
+        if (Test-Path $configfilepath) {
+            Write-Verbose "Found an existing configfile in $configfilepath. loading it"
+            $existingconfig = Get-AzdoAPIToolsConfig -configfilepath $configfilepath
             
-            if (confirm "Do you want to overwrite the existing config in [$configfilefullname] (Y) or add to / replace in existing config (N)?") {
+            if (confirm "Do you want to overwrite the existing config in [$configfilepath] (Y) or add to / replace in existing config (N)?") {
                 $OutConfig = Get-AzDoAPIToolsConfigDetails -new
             }else{
                 $config = Get-AzDoAPIToolsConfigDetails | ConvertFrom-Json
@@ -52,12 +39,12 @@ function Set-AzdoAPIToolsConfig {
                 }     
             }
         }else{
-            Write-verbose "no configfile found at $configfilefullname. Continuing new file setup"
+            Write-verbose "no configfile found at $configfilepath. Continuing new file setup"
             $OutConfig = Get-AzDoAPIToolsConfigDetails -new
         }
 
         if ($OutConfig) {
-            $OutConfig | Out-File $configfilefullname
+            $OutConfig | Out-File $configfilepath
         }
         
 
