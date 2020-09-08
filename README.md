@@ -1,5 +1,11 @@
 # AzDoAPITools
 
+<!-- [![Build Status]()]() -->
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Continuous-Data/AzDoAPITools/blob/master/LICENSE)
+[![Documentation - AzDoAPITools](https://img.shields.io/badge/Documentation-VSTeam-blue.svg)](https://github.com/Continuous-Data/AzDoAPITools/blob/master/docs/readme.md)
+[![PowerShell Gallery - AzDoAPITools](https://img.shields.io/badge/PowerShell%20Gallery-VSTeam-blue.svg)](https://www.powershellgallery.com/packages/AzDoAPITools)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.0-blue.svg)](https://github.com/PowerShell/PowerShell)
+
 ## introduction
 
 AzDoAPITools is a project which stems from various automations which I have done in the past in Azure DevOps. The published project on GitHub right now is all about converting classical pipelines to YAML pipelines. In the future you can expect other automations such as automatic branching / mass policy application etc.
