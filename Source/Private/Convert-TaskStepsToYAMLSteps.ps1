@@ -82,7 +82,7 @@ function ConvertTaskStepsTo-YAMLSteps {
                     $TGtemplate = Get-AzDoAPIToolsDefinitionsTaskGroupsByID -ID $stepid -TGVersion $stepversion -ApiType 'TaskGroup' -Projectname $projectname -profilename $profilename
 
                     if ($ExpandNestedTaskGroups.IsPresent) {
-                        $nestedtaskgrouptasks = ConvertTaskStepsTo-YAMLSteps -profilename $profilename -Projectname $projectname -InputArray $TGTemplate -ExpandNestedTaskGroups -inputType $tgtemplate.type -parentinputtype $inputtype
+                        $nestedtaskgrouptasks = Convert-TaskStepsToYAMLSteps -profilename $profilename -Projectname $projectname -InputArray $TGTemplate -ExpandNestedTaskGroups -inputType $tgtemplate.type -parentinputtype $inputtype
                         $convertedsteps += $nestedtaskgrouptasks
                     }else {
                         

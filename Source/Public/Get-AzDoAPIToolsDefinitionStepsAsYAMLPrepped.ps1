@@ -32,7 +32,7 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
            foreach ($job in $jobs) {
                $definitionsteps = [ordered]@{}
                 $definitionjob = [ordered]@{}
-              $steps = ConvertTaskStepsTo-YAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
+              $steps = Convert-TaskStepsToYAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
               
               [bool]$custompool = ($job.target.PSobject.Properties.name.contains('queue'))
 
