@@ -17,8 +17,15 @@ function Get-AzdoAPIToolsConfig {
 
         return $configJSON
     }else{
+        
+        Write-Host "No config file found at $configfilepath"
+
         if (confirm "Would you like to create a new config file in $configfilepath ?") {
             Set-AzDoAPIToolsConfig -configfilepath $configfilepath
+            
+            $configJSON = Import-JSON -JSONFile $configfilepath
+            return $configJSON
+            
         }else{
             Write-Error "no configfile found at $configfilepath. please run Set-AzDoAPIToolsConfig to create a profile"
         }
