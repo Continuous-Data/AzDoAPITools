@@ -1,4 +1,4 @@
-function Get-AzDoAPIToolsDefinitionSchedules {
+function Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped {
     [CmdletBinding()]
     param (
         # InputObjects
