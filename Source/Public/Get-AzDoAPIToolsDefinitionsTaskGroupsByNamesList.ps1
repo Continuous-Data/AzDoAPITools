@@ -1,4 +1,4 @@
-function Get-DefinitionsTaskGroupsByNamesList {
+function Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList {
     param (
       # Nameslist
       [Parameter(mandatory=$true)]
