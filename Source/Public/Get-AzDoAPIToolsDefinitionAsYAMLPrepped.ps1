@@ -38,7 +38,7 @@ function Get-AzDoAPIToolsDefinitionAsYAMLPrepped {
             $name = @{'name' = '$(buildid)'}
         }
 
-        $inputs = Get-AzDoAPIToolsDefinitionVariables -InputDefinitions $Definition
+        $inputs = Get-AzDoAPIToolsDefinitionVariablesAsYAMLPrepped -InputDefinitions $Definition
         $triggers = Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped -InputDefinitions $Definition
         $schedules = Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped -InputDefinitions $Definition
         $pool = Get-AzDoAPIToolsAgentPool -PoolURL $Definition.value.queue._links.self.href -agentidentifier $Definition.value.process.target.agentSpecification.identifier
