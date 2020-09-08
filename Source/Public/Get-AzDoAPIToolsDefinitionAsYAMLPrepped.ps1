@@ -39,7 +39,7 @@ function Get-AzDoAPIToolsDefinitionAsYAMLPrepped {
         }
 
         $inputs = Get-AzDoAPIToolsDefinitionVariables -InputDefinitions $Definition
-        $triggers = Get-AzDoAPIToolsDefinitionTriggers -InputDefinitions $Definition
+        $triggers = Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped -InputDefinitions $Definition
         $schedules = Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped -InputDefinitions $Definition
         $pool = Get-AzDoAPIToolsAgentPool -PoolURL $Definition.value.queue._links.self.href -agentidentifier $Definition.value.process.target.agentSpecification.identifier
         $pooltoadd = @{}
