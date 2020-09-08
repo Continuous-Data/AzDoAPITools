@@ -1,4 +1,4 @@
-function CallAzDoAPI {
+function Use-AzDoAPI {
    [CmdletBinding()]
     param(
        [Parameter(ValueFromPipeline = $true)]

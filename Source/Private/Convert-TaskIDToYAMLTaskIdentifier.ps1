@@ -13,7 +13,7 @@ function Convert-TaskIDToYAMLTaskIdentifier {
         $InputTaskVersion
     )
 
-    $task = CallAzDoAPI -method 'Get' -area 'distributedtask' -resource 'tasks' -profilename $profilename -version '5.1' -id $InputTaskID
+    $task = Use-AzDoAPI -method 'Get' -area 'distributedtask' -resource 'tasks' -profilename $profilename -version '5.1' -id $InputTaskID
 
     $task = $task.value | Where-Object {$_.version.major -eq $InputTaskVersion}
     

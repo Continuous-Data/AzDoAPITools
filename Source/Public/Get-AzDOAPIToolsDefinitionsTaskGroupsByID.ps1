@@ -44,7 +44,7 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByID {
       BuildDefinition {
   
   
-          $definitions = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1' -id $id
+          $definitions = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1' -id $id
    
           $definitions | ForEach-Object{
             $hash = @{}
@@ -59,7 +59,7 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByID {
       }
       ReleaseDefinition {
   
-          $definitions = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'release' -resource 'definitions' -profilename $profilename -version '5.1-preview' -id $id
+          $definitions = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'release' -resource 'definitions' -profilename $profilename -version '5.1-preview' -id $id
   
           $filtereddefinitions = $definitions.value | Where-Object {$_.name -in $NamesList} 
           
@@ -75,7 +75,7 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByID {
           }
       }
       TaskGroup {
-          $taskgroups = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview' -id $id
+          $taskgroups = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview' -id $id
 
           $filteredtaskgroups = $taskgroups.value 
           $filteredproperties = $filteredtaskgroups 

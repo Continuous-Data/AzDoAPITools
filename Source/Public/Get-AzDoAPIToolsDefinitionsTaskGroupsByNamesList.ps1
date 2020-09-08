@@ -37,11 +37,11 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList {
     switch ($apitype) {
       BuildDefinition {
   
-        $definitions = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1-preview'
+        $definitions = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1-preview'
 
         $filtereddefinitions = $definitions.value | Where-Object {$_.name -in $NamesList} 
         $filtereddefinitions | ForEach-Object{
-          $filtereddefinitiondetails = CallAzDoAPI -url $_.url -method 'Get' -projectname $Projectname -profilename $profilename -version '5.1-preview'
+          $filtereddefinitiondetails = Use-AzDoAPI -url $_.url -method 'Get' -projectname $Projectname -profilename $profilename -version '5.1-preview'
           # $filtereddefinitiondetails
             $hash = @{}
             $hash.Add('id', $($_.id))
@@ -55,12 +55,12 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList {
       }
       ReleaseDefinition {
   
-          $definitions = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'release' -resource 'definitions' -profilename $profilename -version '5.1-preview'
+          $definitions = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'release' -resource 'definitions' -profilename $profilename -version '5.1-preview'
   
           $filtereddefinitions = $definitions.value | Where-Object {$_.name -in $NamesList} 
           
           $filtereddefinitions | ForEach-Object{
-            $filtereddefinitiondetails = CallAzDoAPI -url $_.url -method 'Get' -projectname $Projectname -profilename $profilename -version '5.1-preview'
+            $filtereddefinitiondetails = Use-AzDoAPI -url $_.url -method 'Get' -projectname $Projectname -profilename $profilename -version '5.1-preview'
             $hash = @{}
             $hash.Add('id', $($_.id))
             $hash.Add('name', $($_.name))
@@ -73,7 +73,7 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList {
       }
       TaskGroup {
 
-          $taskgroups = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview'
+          $taskgroups = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview'
 
           $filteredtaskgroups = $taskgroups.value | Where-Object {$_.name -in $NamesList} 
 

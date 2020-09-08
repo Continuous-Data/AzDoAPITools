@@ -14,7 +14,7 @@ function Get-AzDoAPIToolsAgentPool {
     
     process {
         $returnedpool = @{}
-        $pool = CallAzdoApi -url $PoolURL -method 'get'
+        $pool = Use-AzDoAPI -url $PoolURL -method 'get'
         
         if ($pool.pool.isHosted -eq 'true') {
             $returnedpool.Add('vmImage',$agentidentifier)

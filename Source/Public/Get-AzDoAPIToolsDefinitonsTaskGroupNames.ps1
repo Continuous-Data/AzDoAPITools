@@ -18,16 +18,16 @@ function Get-AzDoAPIToolsDefinitonsTaskGroupNamess {
 
   switch ($apitype) {
     BuildDefinition {
-      $response = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1-preview'
+      $response = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'build' -resource 'definitions' -profilename $profilename -version '5.1-preview'
 
  
     }
     ReleaseDefinition {
-      $response = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'release' -resource 'definitions' -profilename $profilename -version '5.1-preview'
+      $response = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'release' -resource 'definitions' -profilename $profilename -version '5.1-preview'
       
     }
     TaskGroup {
-      $response = CallAzDoAPI -method 'Get' -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview'
+      $response = Use-AzDoAPI -method 'Get' -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview'
 
     }
     Default {Write-Error "unaccepted type found. Accepted values are BuildDefintion, ReleaseDefinition, TaskGroup"}
