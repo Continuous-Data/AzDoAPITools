@@ -1,4 +1,4 @@
-function ConvertTaskStepsTo-YAMLSteps {
+function Convert-TaskStepsToYAMLSteps {
     param (
     # input array
     [Parameter()]
