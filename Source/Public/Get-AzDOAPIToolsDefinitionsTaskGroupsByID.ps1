@@ -83,7 +83,7 @@ function Get-AzDoAPIToolsDefinitionsTaskGroupsByID {
             $hash = @{}
             $hash.Add('id', $($_.id))
             $hash.Add('name', $($_.name))
-            $hash.Add('url', (CreateAzdoAPIURL -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview' -id $id))
+            $hash.Add('url', (Get-AzdoAPIURL -projectname $Projectname -area 'distributedtask' -resource 'taskgroups' -profilename $profilename -version '5.1-preview' -id $id))
             $hash.Add('type', $apitype)
             $hash.Add('version', $($_.version.major))
             if($_.version.istest){

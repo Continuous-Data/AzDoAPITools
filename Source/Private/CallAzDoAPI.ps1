@@ -27,7 +27,7 @@ function CallAzDoAPI {
           $buildUriParams = @{ } + $PSBoundParameters;
           $extra = 'method', 'body','ContentType','config','profile','pat'
           foreach ($x in $extra) { $buildUriParams.Remove($x) | Out-Null }
-          $Url = CreateAzdoAPIURL @buildUriParams
+          $Url = Get-AzdoAPIURL @buildUriParams
        }
 
        $configprofile = Get-AzdoAPIToolsProfile -profilename $profilename

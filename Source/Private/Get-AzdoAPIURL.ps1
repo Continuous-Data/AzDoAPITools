@@ -1,4 +1,4 @@
-function CreateAzdoAPIURL {
+function Get-AzdoAPIURL {
     [CmdletBinding()]
     param(
 
