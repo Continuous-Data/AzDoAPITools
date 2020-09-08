@@ -1,4 +1,4 @@
-function DefinitionInputIncludeExclude {
+function Get-DefinitionInputIncludeExclude {
     [CmdletBinding()]
     param (
         # inputs

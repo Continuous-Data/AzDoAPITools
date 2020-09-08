@@ -18,7 +18,7 @@ function Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped {
                 if ($citriggers) {
                     $triggers = [ordered]@{}
                     if($citriggers.branchFilters){
-                        $branchtriggers = DefinitionInputIncludeExclude -inputs $citriggers.branchFilters
+                        $branchtriggers = Get-DefinitionInputIncludeExclude -inputs $citriggers.branchFilters
                     
                         if ($branchtriggers.count -ge 1) {
                             $triggers.add('branches', $branchtriggers)
@@ -26,7 +26,7 @@ function Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped {
                     }
                     
                     if($citriggers.pathFilters){
-                        $pathtriggers = DefinitionInputIncludeExclude -inputs $citriggers.pathFilters
+                        $pathtriggers = Get-DefinitionInputIncludeExclude -inputs $citriggers.pathFilters
 
                         if ($pathtriggers.count -ge 1) {
                             $triggers.add('paths' , $pathtriggers)

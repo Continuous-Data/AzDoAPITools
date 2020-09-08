@@ -24,7 +24,7 @@ function Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped {
                         $yamlschedule.add('cron', $cron)
 
                         if($schedule.branchFilters){
-                            $branchtriggers = DefinitionInputIncludeExclude -inputs $schedule.branchFilters
+                            $branchtriggers = Get-DefinitionInputIncludeExclude -inputs $schedule.branchFilters
                         
                             if ($branchtriggers.count -ge 1) {
                                 $yamlschedule.add('branches', $branchtriggers)
