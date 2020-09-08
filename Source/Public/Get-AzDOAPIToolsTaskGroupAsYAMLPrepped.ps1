@@ -1,4 +1,4 @@
-function Get-AzDOAPIToolsTaskGroupAsYAMLPrepped {
+function Get-AzDoAPIToolsTaskGroupAsYAMLPrepped {
     param (
         # Parameter help description
         [Parameter(mandatory=$true)]
