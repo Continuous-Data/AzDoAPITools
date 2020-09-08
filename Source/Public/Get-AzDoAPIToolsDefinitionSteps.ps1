@@ -72,7 +72,7 @@ function Get-AzDoAPIToolsDefinitionSteps {
               }
            }
 
-           if ($jobcount -gt 1) {
+           if ($jobcount -gt 1 -or $custompool) {
                $retunreddefinitionjobs.add('jobs',$definitionjobs)
 
                return $retunreddefinitionjobs
