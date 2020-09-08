@@ -18,3 +18,47 @@ Welcome to the AzDoAPITools Documentation page. This page will help you get star
 
 ## Individual Functions
 
+### [Convert-AzDoAPIToolsYamlObjectToYAMLFile](/docs/functions/Convert-AzDoAPIToolsYamlObjectToYAMLFile.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionAsYAMLPrepped](/docs/functions/Get-AzDoAPIToolsDefinitionAsYAMLPrepped.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped](/docs/functions/Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionsTaskGroupsByID](/docs/functions/Get-AzDoAPIToolsDefinitionsTaskGroupsByID.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList](/docs/functions/Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped](/docs/functions/Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped](/docs/functions/Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitionVariablesAsYAMLPrepped](/docs/functions/Get-AzDoAPIToolsDefinitionVariablesAsYAMLPrepped.md)
+
+
+
+### [Get-AzDoAPIToolsDefinitonsTaskGroupNames](/docs/functions/Get-AzDoAPIToolsDefinitonsTaskGroupNames.md)
+
+
+
+### [Get-AzDoAPIToolsTaskGroupAsYAMLPrepped](/docs/functions/Get-AzDoAPIToolsTaskGroupAsYAMLPrepped.md)
+
+
+
+### [Set-AzdoAPIToolsConfig](/docs/functions/Set-AzdoAPIToolsConfig.md)
+
+
+
