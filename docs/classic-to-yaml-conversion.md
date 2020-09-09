@@ -1,12 +1,49 @@
 # Migration of Classical Pipelines & Task Groups to Yaml templates
 
-The main driver for combining this toolset was to automate the steps to convert classical pipelines (aka Build / Release Definitions) as well as Task Groups into YAML Pipelines / YAML Templates. This functionality mimics the 'View YAML' button inside steps / jobs. Difference being this will iterate over each step / task group and gather the results to a single yml file as opposed to having to manually select each step and export by hand.
+The main driver for combining this toolset was to automate the steps to convert classical pipelines (aka Build / Release Definitions) as well as Task Groups into YAML Pipelines / YAML Templates. This functionality mimics the 'View YAML' button inside steps / jobs. when doing a migration for a customer from classical to YAML pipelines I noticed how Azure DevOps does not provide a full experience.
 
-It will also convert Definition specific attributes such as triggers, schedules, variables and options into a pre-packed yaml file for immediate use as a complete pipeline. In the future it will also support importing a converted YAML pipeline as a pipeline definition.
+Curently when you want to migrate a classical to YAML pipeline in Azure Devops it has to be done manually. You have the 'View YAML' button in classical pipelines for single steps which will give you the code for that particular step. However it does not work when you are selecting a Task Group step inside your classical pipeline. Furthermore useful properties such as triggers, variables, schedules, options and source options are not available from the Azure DevOps UI.
+
+This means you are left with a lot of manual labor by having to select each and every step inside a single pipeline add it to a YAML file and when there are Task Groups in the mix you would need to open them one by one and copy the single steps inside them and past them. Then you would have to add the other very important properties of a pipeline yourself to that same YAML file you are trying to make.
+
+This is not only tedious but if you have invested a lot of time and effort into Task Groups as a mean to 'Create Once, Use Many' philosophy in CI/CD best practices you would like to convert those to YAML Templates files and call them from your YAML Pipeline.
+
+This Functionality does exactly that and automatically. It currently has two main features:
+
+- Convert Task Groups to YAML step templates
+  - steps: Iterates over steps and add them to the template
+  - Task Groups: When a Task Group is found it can either be added as \-template: or iterate over the steps inside and be added as \-task:
+  - Inputs: Task Group Inputs are converted to template parameters
+- Convert Build Definitions to YAML Pipelines including pipelines properties such as:
+  - Triggers: (both Path and Branch)
+  - Schedules: (already converted into CRON and UTC w/o DST)
+  - Variables: (Secret variables are skipped and set at queue time will be converted to parameters)
+  - Agent Pools: (both at job and pipeline level)
+  - Jobs: (and interdependendancies between them such as dependancies and conditions)
+  - steps: (including non-default properties, inputs and conditions)
+  - Task Groups: When a Task Group is found it can either be added as \-template: or iterate over the steps inside and be added as \-task:
+
+The result of this conversion can either be used as a PSObject or be converted into a \*.yml file for direct usage. In the future I will create functionality to also import the results of the conversion as a new YAML Pipeline definition inside Azure DevOps. For items such as definition specific properties (triggers, schedules etc.) it will be an option to include them in the YAML file or you wish so (not recommended) have them be part of your YAML Pipeline definition.
 
 ## Usage
 
+Below is explained how the module will do its work and what functions to call. No functions have pipeline support. I will be working on converting the module to have this as well as make use of Variable Sets, Classes and Types. I have just learned this exists in Powershell and did not want to halt the project on converting everthing.
+
+### Task Group Conversion
+
+In order to start with Task Group Conversion you will need a Powershell Array with Task Group names which you want to convert. This would look something like this: `$listofnames = @('Task Group 1', 'Task Group 2')`. If you do not have this list available you can call `Get-AzDoAPIToolsDefinitonsTaskGroupNames -ApiType 'Taskgroup' -Projectname 'Project on AzDo'` to get a list of names. Optionally you can provide the `-Profilename 'profile'` to address a specific profile saved in your `config.json`. By default it will pick the first entry in the `config.json` if not specified.
+
+you will need to feed this array into `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` adding the array as `-nameslist` and using `-apitype 'Taskgroup' -projectname 'Project on AzDo'`. Optionally you can use the `-profilename` to specify a different profile. this function knows a set of switches which can be called optionally:
+
+- `-includeTGdrafts` : if your nameslist has Task Groups which are in draft the draft version will be included into the output of this function. This means you could have duplicate names in your resulting array which can cause overwritten files. It is best to seperate Draft Task Groups in a seperate nameslist
+- `-includeTGpreview` : If your nameslist includes Task Groups of which you have a preview currently it will be taken into account when using this switch. By default the function will try to determine the highestversion of a task group and will exclude previews and only use stable versions. If you want your task groups to be converted if a preview is available use this switch to allow the highestversion of a Task Group to be a preview version.
+- `-AllTGVersions` : For converting Task Groups it is not recommended to use this switch. Using this switch will return all versions of the task group in nameslist which will lead to duplicates. It might be useful for other puroposes but not for converting
+
+### Build Definition conversion
+
 ## Examples
+
+This section has some examples on how an example pipelines is converted by the module.
 
 ## Assumptions
 
@@ -16,15 +53,17 @@ Some assumptions had to be made while developing this functionality. Below is th
 
 When converting schedules from the buil-in GUI editor to CRON notation inside YAML I had to follow the guidelines which are stated [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#migrating-from-the-classic-editor). These instructions tells us that schedules in YAML pipelines are expected as CRON notation, but more notably in UTC format. In the classical pipeline you can determine in which timezone OffSet you want to run the schedule. In YAML there is no such way and it expects a UTC based notation.
 
-DayLightSaving corrections are ignored by YAML pipelines. e.g CEST will not be +2 based on UTC but rather +1 (based of the non-DST timezone CET). Converted schedules are formatted as UTC w/o DST correction. This might the schedule in the YAML file has a different day / time as configured in the GUI pipeline.
+DayLightSaving corrections are ignored by YAML pipelines. e.g CEST will not be +2 based on UTC but rather +1 (based of the non-DST timezone CET). Converted schedules are formatted as UTC w/o DST correction. This might mean that the schedule in the YAML file has a different day / time as configured in the GUI pipeline. this is all based on the [guidelines for manually converting schedules to YAML notation](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#migrating-from-the-classic-editor)
 
-e.g. Schedule on Tokyo Time (UTC+9) on Saturday at 1:00 (AM) means it needs to be corrected with -9 hours to be in UTC. Your converted YAML Schedule in CRON will read Friday 16:00 (PM) (0 16 \* \* 5)
+#### example
+
+Schedule on Tokyo Time (UTC+9) on Saturday at 1:00 (AM) means it needs to be corrected with -9 hours to be in UTC. Your converted YAML Schedule in CRON will read Friday 16:00 (PM) (0 16 \* \* 5)
 
 similarly if you have a UTC - x timezone scheduled near the end of your timezones day it will be planned on the next day(s).
 
-### allow override variables --) Parameters
+### allow override variables --> Parameters
 
-Classical Pipelines know variables. One particular property of a variable in classical pipelines is the ability to override values for variables at queue time rendering them into sort of parameters. With YAML Pipelines we now have the option to actually declare parameters in our yaml file. variables (declared in a yaml file, not in definitions) are static.
+Classical Pipelines know variables. One particular property of a variable in classical pipelines is the ability to override values for variables at queue time rendering them into sort of parameters. With YAML Pipelines we now have the option to actually declare parameters in our yaml file. Variables (declared in a yaml file, not in definitions) are static.
 
 The assumption is that if you have declared any variables with the property 'Allow value to be overwritten at queue time' you want them to be turned into YAML parameters.
 
