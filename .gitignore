@@ -10,3 +10,5 @@ Test-results.xml
 testscriptdefinitions.ps1
 
 snippets.ps1
+
+.vscode/settings.json
