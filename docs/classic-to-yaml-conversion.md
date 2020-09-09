@@ -74,6 +74,10 @@ If you wish to store your templates in a seperate repository you need to add a `
 
 ### Build Definition conversion
 
+### Release definition conversion
+
+This is not yet supported. See [Limitations](#manual-stages-in-Release-definitions)
+
 ## Examples
 
 This section has some examples on how an example pipelines is converted by the module.
