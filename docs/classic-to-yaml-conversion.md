@@ -33,11 +33,44 @@ Below is explained how the module will do its work and what functions to call. N
 
 In order to start with Task Group Conversion you will need a Powershell Array with Task Group names which you want to convert. This would look something like this: `$listofnames = @('Task Group 1', 'Task Group 2')`. If you do not have this list available you can call `Get-AzDoAPIToolsDefinitonsTaskGroupNames -ApiType 'Taskgroup' -Projectname 'Project on AzDo'` to get a list of names. Optionally you can provide the `-Profilename 'profile'` to address a specific profile saved in your `config.json`. By default it will pick the first entry in the `config.json` if not specified.
 
+---
+
 you will need to feed this array into `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` adding the array as `-nameslist` and using `-apitype 'Taskgroup' -projectname 'Project on AzDo'`. Optionally you can use the `-profilename` to specify a different profile. this function knows a set of switches which can be called optionally:
 
 - `-includeTGdrafts` : if your nameslist has Task Groups which are in draft the draft version will be included into the output of this function. This means you could have duplicate names in your resulting array which can cause overwritten files. It is best to seperate Draft Task Groups in a seperate nameslist
 - `-includeTGpreview` : If your nameslist includes Task Groups of which you have a preview currently it will be taken into account when using this switch. By default the function will try to determine the highestversion of a task group and will exclude previews and only use stable versions. If you want your task groups to be converted if a preview is available use this switch to allow the highestversion of a Task Group to be a preview version.
 - `-AllTGVersions` : For converting Task Groups it is not recommended to use this switch. Using this switch will return all versions of the task group in nameslist which will lead to duplicates. It might be useful for other puroposes but not for converting
+
+This function will add some necessary MetaData as well as the actual definition to a PSObject which then can be used by subsequent functions which actually convert your task groups.
+
+---
+
+By running `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` and assigning it to a variable you are now ready to convert one or more Task Groups to YAML Templates.
+
+use `Get-AzDoAPIToolsTaskGroupAsYAMLPrepped -TaskGroupsToConvert $arrayresult -projectname 'Project on AzDo'` To output the YAML Prepped PSObject for a Task Group. You can use `-profilename` to specify a different profile. 
+
+if you specify the `-ExpandNestedTaskGroups` switch every 'nested Task Group' inside The current Task Group to be converted will be expanded into \-task: steps rather than \-template: calls to other Task Groups. However you want to use it is up to you. Sidenote. The Template referenced / expanded will be of the version which is being used by the initiating Task Group. That could result in expanding different versions of Task Groups if you have configured it like so. When not using this switch and using different versions of a Task Group it will only refer to the version of the originating task group you converted.
+
+#### Example
+
+Say you have 2 Task Groups referencing Different versions of another Task Group:
+
+- Task Group 1 : References Task Group 3 Version 1
+- Task Group 2 : References Task Group 3 Version 2
+
+When __not__ using the `-ExpandNestedTaskGroups` both converted Task Group 1 & 2 will have a \-template: Task Group 3.yml reference. The reference to the template used will be dependant to which version of Task Group 3 you have converted into a \*.yml file. __Both will refer to the same version__. 
+
+If you had used the `-ExpandNestedTaskGroups` switch Task Group 1 would have the expanded steps of Task Group 3 Version 1 whereas Task Group 2 would have the expanded steps of Task Group 3 Version 2.
+
+If you need different versions of templates you will need to convert both templates and apply some manual labor. For the module it is impossible to convert this granularity without some manual labor. Maybe I will include the version number as a part of the filename when exporting in the future.
+
+---
+
+With these settings the function will output a PSObject with the YAML Prepped properties and values. If you wish to output it as a YAML file you need to use the `-Outputasfile` switch. If you do you will also need to specify the `-OutputPath` argument with a filepath to which the task groups are saved. By default the filename will be \<Name of Task Group\>.yml.
+
+If you wish to store your templates in a different directory that is possible. Any references to existing templates in the form of \-template:taskgroup.yaml need to be changed to be prefixed with a pathname.
+
+If you wish to store your templates in a seperate repository you need to add a `resources` component to the YAML file and suffix the reference to the YAML template with a `@aliastoexternalresource`.
 
 ### Build Definition conversion
 
