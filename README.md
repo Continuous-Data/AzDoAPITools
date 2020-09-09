@@ -8,7 +8,9 @@
 
 ## Introduction
 
-AzDoAPITools is a project which stems from various automations which I have done in the past in Azure DevOps. The published project on GitHub right now is all about converting classical pipelines to YAML pipelines. In the future you can expect other automations such as automatic branching / mass policy application etc.
+AzDoAPITools is a project which was born when doing a migration from classical pipelines to YAML pipelines for a customer. Which is the current function of the published module. The module will convert Task Groups and classical build pipelines to usable all in one YAML pipelines / step templates.
+
+In the future you can expect other automations which i have done for customers such as automatic branching / mass policy application etc. to be bundled in this module.
 
 ## Requirements
 
