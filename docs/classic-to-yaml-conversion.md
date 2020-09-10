@@ -170,7 +170,7 @@ This section has some examples on how an example pipelines is converted by the m
 
 Let's have a look at below classical pipeline and deduct all GUI components and how they will look after conversion:
 
-![Example Pipeline](2020-09-10-15-57-40.png)
+![Example Pipeline](./images/2020-09-10-15-57-40.png)
 
 So let's start with the name of the pipeline: Example-Pipeline. The filename after conversion of this pipeline will be Example-Pipeline.yml
 
