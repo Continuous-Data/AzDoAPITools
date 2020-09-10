@@ -329,9 +329,7 @@ There are 4 schedules in this job to demonstrate the timezone corrections we hav
 
 ![ScheduleMinusOffset](2020-09-10-17-09-21.png)
 
-The First Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
-
-After conversion this will become Saturday 10:00 (AM):
+The First Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset. This means that 9 hours will be added to the schedule. Since the new time is on the same day no shift in days is expected. After conversion this will become Saturday 10:00 (AM):
 
 ```yaml
 - cron: 0 10 * * 6
@@ -340,38 +338,82 @@ After conversion this will become Saturday 10:00 (AM):
     - refs/heads/master
 ```
 
-The Second Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
+![ScheduleDST](2020-09-10-21-51-17.png)
 
-After conversion this will become Saturday 10:00 (AM):
+The Second Schedule is set at 19:07 (7:07 PM) on all days except for sunday on master branch with a UTC + 1 offset. At the time of writing this Timezone has Daylight Savings Time applied and the actual offset to UTC is +2. Despite this correction on DST it should not be reflected in the CRON YAML schedule notation. Therefor the applied schedule should be running on all days except sunday at 18:07 (6:07 PM):
 
 ```yaml
-- cron: 0 10 * * 6
+- cron: 7 18 * * 1,2,3,4,5,6
   branches:
     include:
     - refs/heads/master
 ```
 
-The Third Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
+![Schedulenooffsetsalldays](2020-09-10-21-58-29.png)
 
-After conversion this will become Saturday 10:00 (AM):
+The Third Schedule is set at 06:00 (AM) on every day of the week on every branch but master branch using UTC time. There should be no change to this schedule in the CRON YAML notation. However notice the checkbox for 'Only schedule builds if the source or pipeline has changed' being unchecked. This means that this schedule should always run regardless of the source code. The resulting schedule should have no shift in time, exclude the master branch and always run:
 
 ```yaml
-- cron: 0 10 * * 6
+- cron: 0 6 * * 0,1,2,3,4,5,6
+  branches:
+    exclude:
+    - refs/heads/master
+  always: "true"
+```
+
+![Scheduleplusoffset](2020-09-10-22-01-42.png)
+
+The Fourth Schedule is set at 01:00 (AM) on weekdays on master branch with a UTC + 9 offset. This schedule demonstrates the shift in days because converting the schedule to UTC will extract 9 hours from the current time and would result in the UTC schedule running on the previous day at 16:00 (4:00 PM). this means that the weekday schedule will also shift one day left. The resulting schedule should run Sunday through Thursday at 16:00 (4:00 PM):
+
+```yaml
+- cron: 0 16 * * 0,1,2,3,4
   branches:
     include:
     - refs/heads/master
 ```
 
-The Fourth Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
-
-After conversion this will become Saturday 10:00 (AM):
+The complete schedule section will look like this for the four schedules mentioned in this example:
 
 ```yaml
+schedules:
 - cron: 0 10 * * 6
   branches:
     include:
     - refs/heads/master
+- cron: 7 18 * * 1,2,3,4,5,6
+  branches:
+    include:
+    - refs/heads/master
+- cron: 0 6 * * 0,1,2,3,4,5,6
+  branches:
+    exclude:
+    - refs/heads/master
+  always: "true"
+- cron: 0 16 * * 0,1,2,3,4
+  branches:
+    include:
+    - refs/heads/master
 ```
+
+---
+
+![options tab](2020-09-10-22-34-22.png)
+
+On the options tab there is not much we need to take into consideration. If you have a custom Build number format it will copied as:
+
+```yaml
+name: $(buildid)-custompart-example
+```
+
+if the Build Number format field is empty we default to the `$(buildid)`:
+
+```yaml
+name: $(buildid)-custompart-example
+```
+
+Other settings like timeoutinminuts and jobcanceltimeout which are mentioned here are valid for every job inside the Build Definition. I guess I could apply them to every job inside the pipeline if they are not the default settings. This is not implemented yet. See [this topic](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?tabs=yaml&view=azure-devops#timeouts) by Microsoft to see the correct YAML notation if you wish to apply it yourself. If you have specified a Job timeout in the Job part of the pipeline for that specific job it will be converted as a job property.
+
+Demands is something which is also a [pending feature](#Include-agent-pool-demands-for-custom-self-hosted-pools). The demands specified here are valid for the pipeline agent pool specified not the ones in jobs.
 
 ## Assumptions
 
