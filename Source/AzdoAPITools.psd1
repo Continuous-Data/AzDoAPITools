@@ -22,7 +22,7 @@
     Description = 'Set of Powershell functions to perform all kinds of operations on Azure DevOps such as converting classical to yaml pipelines'
     
     # Minimum version of the Windows PowerShell engine required by this module
-    # PowerShellVersion = '3'
+    #PowerShellVersion = '3'
     
     # Name of the Windows PowerShell host required by this module
     # PowerShellHostName = ''
@@ -58,7 +58,7 @@
     # NestedModules = @()
     
     # Functions to export from this module
-    FunctionsToExport = @('ConvertDefinitionToYAMLTemplate','ConvertTaskGroupToYAMLTemplate','ConvertTaskIDTo-YAMLTaskIdentifier','ConvertTaskStepsTo-YAMLSteps','ConvertTGInputsTo-YamlTemplateInputs','Get-AzDoAPIToolsAgentPool','Get-AzDoAPIToolsDefinitionSteps','Get-AzDoAPIToolsDefinitionTriggers','Get-AzDoAPIToolsDefinitionVariables','Get-DefinitionsTaskGroupsByID','Get-DefinitionsTaskGroupsByNamesList','Get-DefinitonsTaskGroupNames','Get-HighestTaskGroupVersion','Get-TaskInputs','Get-TaskProperties')
+    FunctionsToExport = @('Convert-AzDoAPIToolsYamlObjectToYAMLFile','Get-AzDoAPIToolsDefinitionAsYAMLPrepped','Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped','Get-AzDoAPIToolsDefinitionsTaskGroupsByID','Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList','Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped','Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped','Get-AzDoAPIToolsDefinitionVariablesAsYAMLPrepped','Get-AzDoAPIToolsDefinitonsTaskGroupNames','Get-AzDoAPIToolsTaskGroupAsYAMLPrepped','Set-AzdoAPIToolsConfig')
     
     # Cmdlets to export from this module
     #CmdletsToExport = '*'
