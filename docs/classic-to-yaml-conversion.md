@@ -1,4 +1,4 @@
-# Migration of Classical Pipelines & Task Groups to Yaml templates
+# Conversion of Classical Pipelines to YAML pipelines & Task Groups to Yaml templates
 
 The main driver for combining this toolset was to automate the steps to convert classical pipelines (aka Build / Release Definitions) as well as Task Groups into YAML Pipelines / YAML Templates. This functionality mimics the 'View YAML' button inside steps / jobs. when doing a migration for a customer from classical to YAML pipelines I noticed how Azure DevOps does not provide a full experience.
 
