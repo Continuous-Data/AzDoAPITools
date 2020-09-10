@@ -119,6 +119,42 @@ With these settings the function will output a PSObject with the YAML Prepped pr
 
 #### Extracting a specific component of a Build Definition
 
+You can use one of below functions to retrieve a specific component of a Build Definition and have it YAML Prepped for you. Input for each function would be the array of PSObjects retrieved either by `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` or `Get-AzDoAPIToolsDefinitionsTaskGroupsByID`. Though it is recommended to use these for single Build Definition since the output does not contain any metadata to relate it to a Build Definition.
+
+This section is all about usage of the functions. See [Examples](#Examples) to see how conversion is done.
+
+##### Schedules
+
+Use `Get-AzDoAPIToolsDefinitionSchedulesAsYAMLPrepped -InputDefinitions <array of build definitions>`. 
+
+The result is a YAML prepped PSObject which contains Properties according to the [YAML Schema on Schedules](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#scheduled-trigger)
+
+##### Steps
+
+Use `Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped -InputDefinitions <array of build definitions>`. Since this functions needs to call other parts of Azure DevOps it is neccessary to include the `-Projectname <project on AzDo>` to specify which project to refer to.
+
+You can use the `-profilename <profile alias>` argument to specify a different profile if applicable. To convert references Task Groups inside the definition to separate steps use the `ExpandNestedTaskGroups` switch.
+
+The result is a YAML prepped PSObject which contains Steps according to the [YAML Schema on Steps](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#steps). If your definitions contain multiple jobs or if your job uses a different agent pool as defined on pipeline level this function will include a jobs / job construct according to the [YAML Schema on Jobs](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#job) including any job properties which were defined in the Build Definiton.
+
+##### Triggers
+
+Use `Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped -InputDefinitions <array of build definitions>`.
+
+The result is a YAML prepped PSObject which contains Push / CI Triggers according to the [YAML Schema on Push Triggers](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#push-trigger)
+
+##### Variables (& Parameters)
+
+Use `Get-AzDoAPIToolsDefinitionVariablesAsYAMLPrepped -InputDefinitions <array of build definitions>`.
+
+Secret Variables are skipped. if your variable has the property 'Settable at queue time'. If you have any variable group(s) linked they will be referenced in the YAML output.
+
+The result is a YAML prepped PSObject which contains Parameters according to the [YAML Schema on Parameters](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#parameters) as well as Variables according to the [YAML Schema on Variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#variables)
+
+---
+
+The results as mentioned are PSObjects so they are not yet converted to YAML. If you wish to do so you can either pipe them to `ConvertTo-Yaml` to use the [Powershell-YAML](https://github.com/cloudbase/powershell-yaml) module to convert them to YAML in your PS Session. If you want the output as a \*.yml file you can use `Convert-AzDoAPIToolsYamlObjectToYAMLFile -InputObject $PSOBjectYouWantToConvert -outputpath 'Path to export to' -outputfilename 'filename.yml'`.
+
 ### Release definition conversion
 
 This is not yet supported. See [Limitations](#manual-stages-in-Release-definitions) for the reason why it is not supported.
@@ -143,11 +179,11 @@ Schedule on Tokyo Time (UTC+9) on Saturday at 1:00 (AM) means it needs to be cor
 
 similarly if you have a UTC - x timezone scheduled near the end of your timezones day it will be planned on the next day(s).
 
-### allow override variables --> Parameters
+### variables settable at queue time --> Parameters
 
 Classical Pipelines know variables. One particular property of a variable in classical pipelines is the ability to override values for variables at queue time rendering them into sort of parameters. With YAML Pipelines we now have the option to actually declare parameters in our yaml file. Variables (declared in a yaml file, not in definitions) are static.
 
-The assumption is that if you have declared any variables with the property 'Allow value to be overwritten at queue time' you want them to be turned into YAML parameters.
+The assumption is that if you have declared any variables with the property 'Settable at queue time' you want them to be turned into YAML parameters.
 
 If the module is expanded and the adding of converted yaml pipeline definitions (not the *.yml file itself but its definition) becomes available i might consider exporting variables into the definition rather than the yaml file (see next assumption)
 
