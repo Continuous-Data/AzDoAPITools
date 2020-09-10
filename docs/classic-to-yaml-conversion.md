@@ -203,7 +203,9 @@ steps:
 ---
 
 ![Agent Job](./images/2020-09-10-16-17-04.png)
+Job properties part1
 ![Agent Job part 2](./images/2020-09-10-16-17-45.png)
+Job properties part 2
 
 On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Those are ignored for now and is on the [ToDo list](#Include-agent-pool-demands-for-custom-self-hosted-pools). in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
 
@@ -231,8 +233,11 @@ jobs:
 ---
 
 ![Build def steps](./images/2020-09-10-16-28-30.png)
+Original steps of build definition
 ![refered TG](./images/2020-09-10-16-28-57.png)
+Referenced Task Group from Build Definition
 ![nested TG](./images/2020-09-10-16-30-30.png)
+Nested Task Group in referenced Task Group
 
 Looking at the steps we can see that the Build Definition itself contains a step and a task group. Conversion of these steps would look like this if we did not use `-ExpandNestedTaskGroups`:
 
@@ -283,7 +288,9 @@ steps:
 ---
 
 ![variables](./images/2020-09-10-17-00-04.png)
+Variable settings
 ![variable groups](./images/2020-09-10-16-54-08.png)
+Linked Variable Group(s)
 
 On to the Variables tab in the build definition. We can see that we have 1 secret variable, 1 static variable, 1 variable settable at queue time and 1 linked variable group. When converted this will be the output:
 
