@@ -164,6 +164,215 @@ This is not yet supported. See [Limitations](#manual-stages-in-Release-definitio
 
 This section has some examples on how an example pipelines is converted by the module.
 
+### Example Task Group Conversion
+
+### Example Build Definition conversion
+
+Let's have a look at below classical pipeline and deduct all GUI components and how they will look after conversion:
+
+![Example Pipeline](2020-09-10-15-57-40.png)
+
+So let's start with the name of the pipeline: Example-Pipeline. The filename after conversion of this pipeline will be Example-Pipeline.yml
+
+We can see that the Pipeline section is highlighted. We can see that the default agent pool in this pipeline is VS2017-Win2016 and is a Microsoft hosted Azure Devops agent.
+
+after conversion that will look like:
+
+```yaml
+pool:
+  vmImage: vs2017-win2016
+```
+
+---
+
+![sources](2020-09-10-16-08-53.png)
+
+Looking at the Sources section we can see several checkout options. Currently these will be ignored. This is on the [ToDo list](#Apply-resource-checkout-options). After conversion it should look like this:
+
+```yaml
+steps:
+- checkout: self | none | repository name
+  clean: true | false
+  fetchDepth: number
+  lfs: true | false  
+  submodules: true | recursive
+  path: string
+  persistCredentials: true | false
+```
+
+---
+
+![Agent Job](2020-09-10-16-17-04.png)
+![Agent Job part 2](2020-09-10-16-17-45.png)
+
+On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Those are ignored for now and is on the [ToDo list](#Include-agent-pool-demands-for-custom-self-hosted-pools). in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
+
+```yaml
+jobs:
+- job: Agent_job_1
+  pool:
+    name: Default
+```
+
+Notice how the job name is converted from Agent Job 1 to Agent_job_1. This has to do with the notation limit of job aliases in YAML pipelines. They cannot include spaces.
+
+When the ToDo is finished for demands the result should look like this:
+
+```yaml
+jobs:
+- job: Agent_job_1
+  pool:
+    name: Default
+  demands:
+  - inlinedemand1
+  - inlinedemand2 -equals inlinevalue1
+```
+
+---
+
+![Build def steps](2020-09-10-16-28-30.png)
+![refered TG](2020-09-10-16-28-57.png)
+![nested TG](2020-09-10-16-30-30.png)
+
+Looking at the steps we can see that the Build Definition itself contains a step and a task group. Conversion of these steps would look like this if we did not use `-ExpandNestedTaskGroups`:
+
+```yaml
+steps:
+  - template: testtaskgroup.yml
+  - task: PowerShell@2
+    displayName: PowerShell Script - Build Definition step
+    inputs:
+      script: |
+        # Write your PowerShell commands here.
+
+        Write-Host "Hello World actual Step in Build Def"
+      targetType: inline
+```
+
+If we would have used the `-ExpandNestedTaskGroups` we can see the full chain of steps all in the correct order:
+
+```yaml
+steps:
+  - task: PowerShell@2
+    displayName: PowerShell Script - Task Group Step
+    inputs:
+      script: |
+        # Write your PowerShell commands here.
+
+        Write-Host "Hello World Task Group test"
+      targetType: inline
+  - task: PowerShell@2
+    displayName: PowerShell Script - Nested Task Group Task
+    inputs:
+      script: |
+        # Write your PowerShell commands here.
+
+        Write-Host "Hello World Nested TG Test"
+      targetType: inline
+  - task: PowerShell@2
+    displayName: PowerShell Script - Build Definition step
+    inputs:
+      script: |
+        # Write your PowerShell commands here.
+
+        Write-Host "Hello World actual Step in Build Def"
+      targetType: inline
+
+```
+
+---
+
+![variables](2020-09-10-17-00-04.png)
+![variable groups](2020-09-10-16-54-08.png)
+
+On to the Variables tab in the build definition. We can see that we have 1 secret variable, 1 static variable, 1 variable settable at queue time and 1 linked variable group. When converted this will be the output:
+
+```yaml
+parameters:
+- name: parametervar
+  type: string
+  default: testvalue
+variables:
+- name: system.debug
+  value: "false"
+- name: statictestvar
+  value: staticvalue
+- group: testgroup
+```
+
+We can see that the secret var is skipped, the settable var is included as a parameter, the static variable is in the variables section and that we have 1 linked variablegroup.
+
+Oddly enough system.debug is not considered a predefined variable whereas the others are. these variables come with every pipeline generated in the UI. I'm still deciding whether i should ignore the system.debug variable since we have a diagnostics button in YAML pipelines which does the same.
+
+---
+
+![CI triggers](2020-09-10-17-05-51.png)
+
+We have 1 included branch to trigger on, 2 paths to filter on (1 included, 1 excluded) and Batch changes is checked. This would become the following YAML:
+
+```yaml
+trigger:
+  branches:
+    include:
+    - refs/heads/master
+  paths:
+  - include:
+    - pathtoinclude
+  - exclude:
+    - pathtoexclude
+  batch: true
+```
+
+---
+
+There are 4 schedules in this job to demonstrate the timezone corrections we have to do for the expected CRON notation:
+
+![ScheduleMinusOffset](2020-09-10-17-09-21.png)
+
+The First Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
+
+After conversion this will become Saturday 10:00 (AM):
+
+```yaml
+- cron: 0 10 * * 6
+  branches:
+    include:
+    - refs/heads/master
+```
+
+The Second Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
+
+After conversion this will become Saturday 10:00 (AM):
+
+```yaml
+- cron: 0 10 * * 6
+  branches:
+    include:
+    - refs/heads/master
+```
+
+The Third Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
+
+After conversion this will become Saturday 10:00 (AM):
+
+```yaml
+- cron: 0 10 * * 6
+  branches:
+    include:
+    - refs/heads/master
+```
+
+The Fourth Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset.
+
+After conversion this will become Saturday 10:00 (AM):
+
+```yaml
+- cron: 0 10 * * 6
+  branches:
+    include:
+    - refs/heads/master
+```
+
 ## Assumptions
 
 Some assumptions had to be made while developing this module. Below is the explanation of these assumptions.
@@ -246,6 +455,10 @@ According to [this](https://developercommunity.visualstudio.com/idea/697467/manu
 ## ToDo list
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority I gave them.
+
+### Include agent pool demands for custom self-hosted pools
+
+Currently demands for Self-hosted pools are ignored. This will be added asap. This will only be implemented for Self-Hosted pools as Microsoft decided that for YAML they only allow demands for custom pools. if you have demands for Microsoft hosted pools (which you can set in the GUI) they will be ingored.
 
 ### Apply resource checkout options
 
