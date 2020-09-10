@@ -30,7 +30,7 @@ Run Set-AzDOAPIToolsConfig to create a config.json file which is stored inside t
 
 ## Documentation
 
-You can find documentation [here](/docs/README.md) or check specific functionality documentation below.
+You can find generic documentation [here](/docs/README.md) or check specific functionality documentation below.
 
 ## Functionality
 
@@ -50,6 +50,12 @@ You can find documentation [here](/docs/README.md) or check specific functionali
     - PSScriptAnalyzer
     - Pester
 - Load the module from the BuildOutput folder
+
+## Pester Tests
+
+Currently only placeholders have been made for each function. Tests were done on my personal Azure DevOps Instance and verified by using the actual converted pipelines to see how they work.
+
+I need to gain more knowledge on Pester Tests and especially on how to mock the REST API calls. Tests will be added when I have this knowledged and time to create tests.
 
 ## License
 
