@@ -232,8 +232,7 @@ jobs:
 
 ---
 
-![Build def steps](./images/2020-09-10-16-28-30.png)
-*Original steps of build definition*
+![Build def steps](./images/2020-09-10-16-28-30.png)*Original steps of build definition*
 ![refered TG](./images/2020-09-10-16-28-57.png)
 Referenced Task Group from Build Definition
 
