@@ -185,7 +185,7 @@ pool:
 
 ---
 
-![sources](2020-09-10-16-08-53.png)
+![sources](./images/2020-09-10-16-08-53.png)
 
 Looking at the Sources section we can see several checkout options. Currently these will be ignored. This is on the [ToDo list](#Apply-resource-checkout-options). After conversion it should look like this:
 
@@ -202,8 +202,8 @@ steps:
 
 ---
 
-![Agent Job](2020-09-10-16-17-04.png)
-![Agent Job part 2](2020-09-10-16-17-45.png)
+![Agent Job](./images/2020-09-10-16-17-04.png)
+![Agent Job part 2](./images/2020-09-10-16-17-45.png)
 
 On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Those are ignored for now and is on the [ToDo list](#Include-agent-pool-demands-for-custom-self-hosted-pools). in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
 
@@ -230,9 +230,9 @@ jobs:
 
 ---
 
-![Build def steps](2020-09-10-16-28-30.png)
-![refered TG](2020-09-10-16-28-57.png)
-![nested TG](2020-09-10-16-30-30.png)
+![Build def steps](./images/2020-09-10-16-28-30.png)
+![refered TG](./images/2020-09-10-16-28-57.png)
+![nested TG](./images/2020-09-10-16-30-30.png)
 
 Looking at the steps we can see that the Build Definition itself contains a step and a task group. Conversion of these steps would look like this if we did not use `-ExpandNestedTaskGroups`:
 
@@ -282,8 +282,8 @@ steps:
 
 ---
 
-![variables](2020-09-10-17-00-04.png)
-![variable groups](2020-09-10-16-54-08.png)
+![variables](./images/2020-09-10-17-00-04.png)
+![variable groups](./images/2020-09-10-16-54-08.png)
 
 On to the Variables tab in the build definition. We can see that we have 1 secret variable, 1 static variable, 1 variable settable at queue time and 1 linked variable group. When converted this will be the output:
 
@@ -306,7 +306,7 @@ Oddly enough system.debug is not considered a predefined variable whereas the ot
 
 ---
 
-![CI triggers](2020-09-10-17-05-51.png)
+![CI triggers](./images/2020-09-10-17-05-51.png)
 
 We have 1 included branch to trigger on, 2 paths to filter on (1 included, 1 excluded) and Batch changes is checked. This would become the following YAML:
 
@@ -327,7 +327,7 @@ trigger:
 
 There are 4 schedules in this job to demonstrate the timezone corrections we have to do for the expected CRON notation:
 
-![ScheduleMinusOffset](2020-09-10-17-09-21.png)
+![ScheduleMinusOffset](./images/2020-09-10-17-09-21.png)
 
 The First Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC - 9 offset. This means that 9 hours will be added to the schedule. Since the new time is on the same day no shift in days is expected. After conversion this will become Saturday 10:00 (AM):
 
@@ -338,7 +338,7 @@ The First Schedule is set at 01:00 (AM) on Saturday on master branch with a UTC 
     - refs/heads/master
 ```
 
-![ScheduleDST](2020-09-10-21-51-17.png)
+![ScheduleDST](./images/2020-09-10-21-51-17.png)
 
 The Second Schedule is set at 19:07 (7:07 PM) on all days except for sunday on master branch with a UTC + 1 offset. At the time of writing this Timezone has Daylight Savings Time applied and the actual offset to UTC is +2. Despite this correction on DST it should not be reflected in the CRON YAML schedule notation. Therefor the applied schedule should be running on all days except sunday at 18:07 (6:07 PM):
 
@@ -349,7 +349,7 @@ The Second Schedule is set at 19:07 (7:07 PM) on all days except for sunday on m
     - refs/heads/master
 ```
 
-![Schedulenooffsetsalldays](2020-09-10-21-58-29.png)
+![Schedulenooffsetsalldays](./images/2020-09-10-21-58-29.png)
 
 The Third Schedule is set at 06:00 (AM) on every day of the week on every branch but master branch using UTC time. There should be no change to this schedule in the CRON YAML notation. However notice the checkbox for 'Only schedule builds if the source or pipeline has changed' being unchecked. This means that this schedule should always run regardless of the source code. The resulting schedule should have no shift in time, exclude the master branch and always run:
 
@@ -361,7 +361,7 @@ The Third Schedule is set at 06:00 (AM) on every day of the week on every branch
   always: "true"
 ```
 
-![Scheduleplusoffset](2020-09-10-22-01-42.png)
+![Scheduleplusoffset](./images/2020-09-10-22-01-42.png)
 
 The Fourth Schedule is set at 01:00 (AM) on weekdays on master branch with a UTC + 9 offset. This schedule demonstrates the shift in days because converting the schedule to UTC will extract 9 hours from the current time and would result in the UTC schedule running on the previous day at 16:00 (4:00 PM). this means that the weekday schedule will also shift one day left. The resulting schedule should run Sunday through Thursday at 16:00 (4:00 PM):
 
@@ -397,7 +397,7 @@ schedules:
 
 ---
 
-![options tab](2020-09-10-22-34-22.png)
+![options tab](./images/2020-09-10-22-34-22.png)
 
 On the options tab there is not much we need to take into consideration. If you have a custom Build number format it will copied as:
 
