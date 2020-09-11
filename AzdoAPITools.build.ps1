@@ -1,4 +1,4 @@
-#requires -Modules InvokeBuild, Buildhelpers, PSScriptAnalyzer, Pester
+#requires -Modules InvokeBuild, Buildhelpers, PSScriptAnalyzer, Pester, PSDeploy, PlatyPS
 
 $script:ModuleName = 'AzdoAPITools'
 
