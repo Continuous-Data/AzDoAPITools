@@ -162,16 +162,142 @@ This is not yet supported. See [Limitations](#manual-stages-in-Release-definitio
 
 ## Examples
 
-This section has some examples on how an example pipelines is converted by the module.
+This section has some examples on how Task Groups and Build Definitions are converted by the module and shows example results.
 
 ### Example Task Group Conversion
+
+For demonstrating this purpose i have created two task groups:
+
+![Task Groups](./images/2020-09-10-23-34-21.png)
+*Task Groups Example*
+
+__Example-Task-Group-1__ contains two tasks and in between a nested task group __Nested-TG-Example__. __Nested-TG-Example__ on its turn has one task:
+
+![Example Task group 1](./images/2020-09-11-09-32-19.png)
+*Example Task Group 1*
+
+![Nested Task Group](./images/2020-09-11-09-34-35.png)
+*Nested Task Group*
+
+We can also see that the original Task group has 3 inputs. tgvariable1 & tgvariable2 are included because of the tasks itself inside the original task group. tgvariable3 comes with that because the Nested Task Group has it as an input.
+
+So let's see how this converts to YAML :) There are two ways to approach this. With and without `-ExpandNestedTaskGroups` switch.
+
+#### Without expansion
+
+if we would run the functions in this module without the `-ExpandNestedTaskGroups` for both task groups we would get 2 \*.yml files:
+
+- Example-Task-Group-1.yml
+- Nested-TG-Example.yml
+
+`Example-Task-Group-1.yml` would look like this in YAML syntax:
+
+```yaml
+parameters:
+- name: tgvariable1
+  type: string
+- name: tgvariable2
+  type: string
+- name: tgvariable3
+  type: string
+steps:
+- task: PowerShell@2
+  displayName: PowerShell Script - TG Task 1
+  inputs:
+    filePath: ${{parameters.tgvariable1}}
+- template: Nested-TG-Example.yml
+  parameters:
+    tgvariable3: ${{parameters.tgvariable3}}
+- task: PowerShell@2
+  displayName: PowerShell Script - TG Task 2
+  inputs:
+    filePath: ${{parameters.tgvariable2}}
+```
+
+We can see that the converted Task groups has 3 parameters as input. Since Task Groups inputs are always strings they are typed as such. We can see that the same three inputs are available as inputs as we would have in the Classical Task Group.
+
+Also notice that there are no default values assigned. The way Default values work for Classical Task Groups is that they form a suggestion when you add them to your Build / Release Definition. The function of this module is to convert existing Task Groups and Build / Release Definitons. That means that wherever you reference a Task group you have provided the inputs you want. The sole purpose of these YAML templates is to 'Create once, Use Many'. By removing the default values you are being made concious about what you would need to fill when calling them. Also when you are converting Build Definitions which call a Task Group the inputs you have assigned to the template are also converted.
+
+Furthermore we can see that the steps of this YAML template are exactly as in the original Task group. except that calling another Task Group is replaced with the \- template: construct in providing the Nested YAML template. That would require you to also convert the nested TG as a YAML Template.
+
+`Nested-TG-Example.yml` would look like this in YAML syntax:
+
+```yaml
+parameters:
+  name: tgvariable3
+  type: string
+steps:
+  task: PowerShell@2
+  displayName: PowerShell Script - Nested TG Task 1
+  inputs:
+    filePath: ${{parameters.tgvariable3}}
+```
+
+in the Nested Template we can see a single parameter and a single task. which is exactly what is in the Classical Task group. Since it is being called by the original YAML Template the steps inside this Nested template will be expanded when Azure DevOps expands the complete pipeline at queue time.
+
+You should not use Task group Expansion when you have a complex set of Task Groups which you want to template out as YAML templates for reusability. Bear in mind that if you version your Task Groups and [are in needed of multiple versions](#Sidenote-on-Task-Group-Versions) at the same time you might want to convert multiple versions of the task groups used and apply different names manually and change the references to the yaml templates. The same applies when you want to [centralize your templates](#Sidenote-on-Template-Usage) in one or more repo's. You will need the add resource constructs to the pipelines calling the templates and update the references to the called templates.
+
+---
+
+#### With expansion
+
+When we would have the `-ExpandNestedTaskGroups` switch present it means that all nested task groups will be expanded and put in place where the call to that template was. If we were to convert both Task Groups again in our example we would get the following two files:
+
+- Example-Task-Group-1.yml
+- Nested-TG-Example.yml
+
+`Example-Task-Group-1.yml` would look like this in YAML syntax:
+
+```yaml
+parameters:
+- name: tgvariable1
+  type: string
+- name: tgvariable2
+  type: string
+- name: tgvariable3
+  type: string
+steps:
+- task: PowerShell@2
+  displayName: PowerShell Script - TG Task 1
+  inputs:
+    filePath: ${{parameters.tgvariable1}}
+- task: PowerShell@2
+  displayName: PowerShell Script - Nested TG Task 1
+  inputs:
+    filePath: ${{parameters.tgvariable3}}
+- task: PowerShell@2
+  displayName: PowerShell Script - TG Task 2
+  inputs:
+    filePath: ${{parameters.tgvariable2}}
+```
+
+The difference with not using the `-ExpandNestedTaskGroups` is that the contents of the Nested Task Group are placed instead of calling the Converted YAML file for the Nested Task Group with the \- template: construct. If the Nested Task groups would have had multiple steps or even Nested Task Groups of itself they would also be expanded and put in the right order. The converted Task Group will have all paramaters from all nested task groups added to the list.
+
+`Nested-TG-Example.yml` would look like this in YAML syntax:
+
+```yaml
+parameters:
+  name: tgvariable3
+  type: string
+steps:
+  task: PowerShell@2
+  displayName: PowerShell Script - Nested TG Task 1
+  inputs:
+    filePath: ${{parameters.tgvariable3}}
+```
+
+We can see that this file is exactly the same as in the example without using the `-ExpandNestedTaskGroups` switch. And since it is already present in expanded form in the original converted Task Group this converted Task group would initially have no extra value unless you would add it to a YAML definition or another YAML Template by hand. There might be special occasions where you would want a scenario like this which is why I included the functionality.
+
+Use the `-ExpandNestedTaskGroups` switch if you want to simplify and or merge various Task groups together in a single template. Be aware that this functionality is situational and that it should fit your strategy.
+
+---
 
 ### Example Build Definition conversion
 
 Let's have a look at below classical pipeline and deduct all GUI components and how they will look after conversion:
 
 ![Example Pipeline](./images/2020-09-10-15-57-40.png)
-*Example Pipeline*
+*Example Pipeline with a nested Task group*
 
 So let's start with the name of the pipeline: Example-Pipeline. The filename after conversion of this pipeline will be Example-Pipeline.yml
 
@@ -235,15 +361,12 @@ jobs:
 ---
 
 ![Build def steps](./images/2020-09-10-16-28-30.png)
-
 *Original steps of build definition*
 
 ![refered TG](./images/2020-09-10-16-28-57.png)
-
 *Referenced Task Group from Build Definition*
 
 ![nested TG](./images/2020-09-10-16-30-30.png)
-
 *Nested Task Group in referenced Task Group*
 
 Looking at the steps we can see that the Build Definition itself contains a step and a task group. Conversion of these steps would look like this if we did not use `-ExpandNestedTaskGroups`:
