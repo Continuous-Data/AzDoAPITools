@@ -8,31 +8,32 @@ schema: 2.0.0
 # Convert-AzDoAPIToolsYamlObjectToYAMLFile
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+{{ Converts a YAML PSOBject to YAML using Powershell-YAML and outs to a UTF-8 yml file }}
 
 ## SYNTAX
 
-```
+```powershell
 Convert-AzDoAPIToolsYamlObjectToYAMLFile [-InputObject] <Object> [-outputpath] <String>
  [-Outputfilename] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+{{ Converts a YAML PSOBject to YAML using Powershell-YAML and outs to a UTF-8 yml file }}
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> {{ Convert-AzDoAPIToolsYamlObjectToYAMLFile -InputObject $objectToConvert -outputpath 'C:\OutPutPathToUse'
+ -Outputfilename 'FileNameToUse.yml' }}
 ```
 
-{{ Add example description here }}
+{{ This Example will convert the $ObjectToConvert to YAML notation and output it to  C:\OutPutPathToUse\FileNameToUse.yml. If the path does not exist it will prompt to create it for you. }}
 
 ## PARAMETERS
 
 ### -InputObject
-{{ Fill InputObject Description }}
+{{ Object which is YAMLPrepped and needs conversion. }}
 
 ```yaml
 Type: Object
@@ -47,7 +48,7 @@ Accept wildcard characters: False
 ```
 
 ### -Outputfilename
-{{ Fill Outputfilename Description }}
+{{ String filename to use including extension to write. }}
 
 ```yaml
 Type: String
@@ -62,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -outputpath
-{{ Fill outputpath Description }}
+{{ String path name where you want the yml file to be written to. }}
 
 ```yaml
 Type: String
