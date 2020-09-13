@@ -36,6 +36,8 @@ Array of Build Definitions with MetaData to be converted to YAML Pipelines
 ```yaml
 Type: Array
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 0
 Default value: None

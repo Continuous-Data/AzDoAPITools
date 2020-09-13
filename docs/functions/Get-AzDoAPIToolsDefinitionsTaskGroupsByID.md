@@ -94,6 +94,8 @@ Switch to have the function return all versions of a Task Group given. Will only
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: None
@@ -107,7 +109,9 @@ Specifies what API to call. Knows BuildDefinition, ReleaseDefinition and TaskGro
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
 Accepted values: BuildDefinition, ReleaseDefinition, TaskGroup
+
 Required: True
 Position: 4
 Default value: None
@@ -121,6 +125,8 @@ ID of the Build / Release definition or Task Group to lookup. for Build / Releas
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 0
 Default value: None
@@ -134,6 +140,8 @@ The project to use to call the AzDo API. Should be the same as the project used 
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 2
 Default value: None
@@ -147,6 +155,8 @@ Used in combination with -APIType TaskGroup. Specifies a specific version to ret
 ```yaml
 Type: Int32
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: 1
 Default value: None
@@ -160,6 +170,8 @@ If this switch is used it will include any Task Groups which are in Draft State.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: None
@@ -173,6 +185,8 @@ If this switch is used the results of the function will include previews of a ta
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: None
@@ -186,6 +200,8 @@ Optional parameter to target a specific alias inside the config.json to use as a
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: 3
 Default value: None

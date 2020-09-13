@@ -87,6 +87,8 @@ Switch to have the function return all versions of a Task Group given. Will only
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: None
@@ -100,7 +102,9 @@ Specifies what API to call. Knows BuildDefinition, ReleaseDefinition and TaskGro
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
 Accepted values: BuildDefinition, ReleaseDefinition, TaskGroup
+
 Required: True
 Position: 3
 Default value: None
@@ -114,6 +118,8 @@ Array of names to look for in Build / Release Definitions or Task Groups.
 ```yaml
 Type: Array
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 0
 Default value: None

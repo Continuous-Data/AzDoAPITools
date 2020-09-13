@@ -59,6 +59,8 @@ Switch to determine whether or not to expand found Task Groups or to call them a
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: None
@@ -72,6 +74,8 @@ If Specified will write to this path when -OutPutAsFile is used. If the specifie
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 3
 Default value: None
@@ -85,6 +89,8 @@ Accept wildcard characters: False
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: None
@@ -98,6 +104,8 @@ The project to use to call the AzDo API. Should be the same as the project used 
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 1
 Default value: None
@@ -111,6 +119,8 @@ Array of Task Groups with MetaData to be converted to YAML Pipelines
 ```yaml
 Type: Array
 Parameter Sets: (All)
+Aliases:
+
 Required: True
 Position: 0
 Default value: None
@@ -124,6 +134,8 @@ Optional parameter to target a specific alias inside the config.json to use as a
 ```yaml
 Type: String
 Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: 2
 Default value: None
