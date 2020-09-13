@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-AzdoAPIToolsConfig
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+A simple function to add & overwrite the config.json file used by the module.
 
 ## SYNTAX
 
@@ -17,21 +17,28 @@ Set-AzdoAPIToolsConfig [[-configfilepath] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+A simple function to add & overwrite the config.json file used by the module.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Set-AzdoAPIToolsConfig
 ```
 
-{{ Add example description here }}
+Will start the process to save a config.json file used by this module in %AppData%\AzDoAPITools. If a config file exists you will be prompted if you want to overwrite the existing file or if you want to append / add to the existing config.json file. If you choose to overwrite it will create a new config.json file with the details requested. If you choose to append / add you will be prompted for the details. If the Alias you entered for the connection to save exists in the configfile you will be prompted if it needs to be overwritten or appended.
+
+### Example 2
+```powershell
+PS C:\> Set-AzdoAPIToolsConfig -configfilepath C:\testpath
+```
+
+Will start the process to save a config.json file used by this module in C:\testpath. If a config file exists you will be prompted if you want to overwrite the existing file or if you want to append / add to the existing config.json file. If you choose to overwrite it will create a new config.json file with the details requested. If you choose to append / add you will be prompted for the details. If the Alias you entered for the connection to save exists in the configfile you will be prompted if it needs to be overwritten or appended.
 
 ## PARAMETERS
 
 ### -configfilepath
-{{ Fill configfilepath Description }}
+Specifies a path where to save your configfile.
 
 ```yaml
 Type: Object

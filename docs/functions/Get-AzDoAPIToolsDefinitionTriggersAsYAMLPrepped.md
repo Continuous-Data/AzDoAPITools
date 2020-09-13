@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Returns a YAML Prepped PSObject with the triggers of a YAML pipeline based on a(n Array) of Build Definitions
 
 ## SYNTAX
 
@@ -17,27 +17,25 @@ Get-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped [-InputDefinitions] <Array> [<Co
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This function takes one or more Build Definition where metadata is present from `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` or `Get-AzDoAPIToolsDefinitionsTaskGroupsByID` and extracts the triggers from it and prepare it for conversion use in a YAML Pipeline. If desired use `Convert-AzDoAPIToolsYamlObjectToYAMLFile` to convert the extracted elements to a seperate yml file.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> GGet-AzDoAPIToolsDefinitionTriggersAsYAMLPrepped -InputDefinitions $ArrayOfBuildDefinitions
 ```
 
-{{ Add example description here }}
+Will Take The definitions specified in $ArrayOfBuildDefinitions and for each definition will extract the trigger elements from a Build Definition and converts them to a YAML ready PSObject.
 
 ## PARAMETERS
 
 ### -InputDefinitions
-{{ Fill InputDefinitions Description }}
+Array of Build Definitions with MetaData to be converted to YAML Pipelines
 
 ```yaml
 Type: Array
 Parameter Sets: (All)
-Aliases:
-
 Required: True
 Position: 0
 Default value: None
