@@ -17,7 +17,7 @@ stages:
             artifact: $(ModuleName)
   - stage: Publish_to_PSGallery
     displayName: 'Publish to PS Gallery'
-    dependsOn: Build-test
+    dependsOn: Build_test
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - job: Publish
