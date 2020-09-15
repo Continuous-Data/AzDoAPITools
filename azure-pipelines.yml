@@ -1,0 +1,30 @@
+variables:
+  Modulename: AzDoAPITools
+stages:
+  - stage: Build-test
+    displayName: 'Build & Test'
+    jobs:
+      - job: Build
+        displayName: 'Build & Test'
+        steps:
+          - checkout: self
+          - task: PowerShell@2
+            inputs:
+              targetType: 'FilePath'
+              filePath: $(System.DefaultWorkingDirectory)/build.ps1
+              arguments: -task CICD
+          - publish: $(System.DefaultWorkingDirectory)/BuildOutput/$(Modulename)
+            artifact: $(ModuleName)
+  - stage: Publish-to-PSGallery
+    displayName: 'Publish to PS Gallery'
+    dependsOn: Build-test
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+      - job: Publish
+        displayName: 'Publish To PS Gallery'
+        steps:
+          - download: current
+            artifact: $(ModuleName)
+            
+          
+        
