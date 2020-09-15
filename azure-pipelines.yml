@@ -1,7 +1,7 @@
 variables:
   Modulename: AzDoAPITools
 stages:
-  - stage: Build-test
+  - stage: Build_test
     displayName: 'Build & Test'
     jobs:
       - job: Build
@@ -15,7 +15,7 @@ stages:
               arguments: -task CICD
           - publish: $(System.DefaultWorkingDirectory)/BuildOutput/$(Modulename)
             artifact: $(ModuleName)
-  - stage: Publish-to-PSGallery
+  - stage: Publish_to_PSGallery
     displayName: 'Publish to PS Gallery'
     dependsOn: Build-test
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
