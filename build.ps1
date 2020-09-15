@@ -3,7 +3,7 @@ param(
     [string[]]$Task = 'CICD'
 )
 
-$DependentModules = @('InvokeBuild', 'Buildhelpers', 'PSScriptAnalyzer', 'Pester', 'PSDeploy', 'PlatyPS') # add pester when pester tests are added
+$DependentModules = @('InvokeBuild', 'Buildhelpers', 'PSScriptAnalyzer', 'Pester', 'PSDeploy', 'PlatyPS','Powershell-YAML') # add pester when pester tests are added
 Foreach ($Module in $DependentModules){
     If (-not (Get-Module $module -ListAvailable)){
         Install-Module -name $Module -Scope CurrentUser -Force
