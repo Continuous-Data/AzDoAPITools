@@ -16,10 +16,11 @@ function TaskX($Name, $Parameters) {task $Name @Parameters -Source $MyInvocation
 
 task Default Clean, Build, AnalyzeErrors, Pester
 task Build CopyToOutput, BuildPSM1, BuildPSD1, DocBuild 
-task Pester ImportModule, Test
+task Pester {ImportModule}, Test, {uninstall}
+Task UpdateDocs {ImportModule}, CreateUpdateDocs, {uninstall}
 
-task Local Default, UpdateSource
-task CICD Default, UpdateVersion, Uninstall
+task Local Default, UpdateSource, UpdateDocs
+task CICD Default, UpdateVersion, {Uninstall}
 
 Task Clean {
     If(Get-Module $moduleName){
@@ -28,10 +29,6 @@ Task Clean {
     If(Test-Path $Output){
         $null = Remove-Item $Output -Recurse -ErrorAction Ignore
     }
-}
-
-Task DocBuild {
-    New-ExternalHelp $docPath -OutputPath "$destination\EN-US"
 }
 
 Task CopyToOutput {
@@ -170,7 +167,7 @@ Task UpdateSource {
     Copy-Item $ManifestPath -Destination "$source\$ModuleName.psd1"
 }
 
-Task ImportModule {
+Function ImportModule {
     if ( -Not ( Test-Path $ManifestPath ) )
     {
         "  Modue [$ModuleName] is not built, cannot find [$ManifestPath]"
@@ -188,7 +185,7 @@ Task ImportModule {
     }
 }
 
-task Uninstall {
+function Uninstall {
     'Unloading Modules...'
     Get-Module -Name $ModuleName -ErrorAction 'Ignore' | Remove-Module
 
@@ -218,4 +215,22 @@ task Uninstall {
 
 task Publish {
     Invoke-PSDeploy -Path $PSScriptRoot -Force
+}
+
+Task DocBuild {
+    New-ExternalHelp $docPath -OutputPath "$destination\EN-US"
+}
+
+Task CreateUpdateDocs {
+    
+    If(-not (Test-Path $DocPath)){
+        "Creating Doucments path: DocPath"
+        $null = New-Item -Type Directory -Path $DocPath -ErrorAction Ignore
+    }
+
+    "Creating new markdown files if any"
+    New-MarkdownHelp -Module $modulename -OutputFolder $docpath -ErrorAction SilentlyContinue
+    "Updating existing markdown files."
+    Update-MarkdownHelp $docpath
+
 }
