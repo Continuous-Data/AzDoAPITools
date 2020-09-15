@@ -28,8 +28,6 @@ function Convert-TaskStepsToYAMLSteps {
 
 
     foreach ($input in $InputArray) {
-    
-        $InputsArray = @()
         
         if ($inputtype -eq 'BuildDefinition') {
             $steps = $input.steps

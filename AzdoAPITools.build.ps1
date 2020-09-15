@@ -1,7 +1,8 @@
 #requires -Modules InvokeBuild, Buildhelpers, PSScriptAnalyzer, Pester, PSDeploy, PlatyPS
 
 $script:ModuleName = 'AzdoAPITools'
-
+$Script:Author = 'Tobi Steenbakkers'
+$Script:CompanyName = 'Continuous Data'
 $script:Source = Join-Path $BuildRoot Source
 $script:Output = Join-Path $BuildRoot BuildOutput
 $script:DocPath =  Join-Path $BuildRoot "docs\functions"
@@ -9,13 +10,9 @@ $script:Destination = Join-Path $Output $ModuleName
 $script:ModulePath = "$Destination\$ModuleName.psm1"
 $script:ManifestPath = "$Destination\$ModuleName.psd1"
 $script:Imports = ( 'Private','Public' )
-# $script:TestFile = "$PSScriptRoot\output\TestResults_PS$PSVersion`_$TimeStamp.xml"
-# $script:HelpRoot = Join-Path $Output 'help'
-
-function TaskX($Name, $Parameters) {task $Name @Parameters -Source $MyInvocation}
 
 task Default Clean, Build, AnalyzeErrors, Pester
-task Build CopyToOutput, BuildPSM1, BuildPSD1, DocBuild 
+task Build ModuleBuild, DocBuild
 task Pester {ImportModule}, Test, {uninstall}
 Task UpdateDocs {ImportModule}, CreateUpdateDocs, {uninstall}
 
@@ -28,61 +25,6 @@ Task Clean {
     }
     If(Test-Path $Output){
         $null = Remove-Item $Output -Recurse -ErrorAction Ignore
-    }
-}
-
-Task CopyToOutput {
-
-    "  Create Directory [$Destination]"
-    $null = New-Item -Type Directory -Path $Destination -ErrorAction Ignore
-
-    Get-ChildItem $source -File |
-        Where-Object name -NotMatch "$ModuleName\.ps[dm]1" |
-        Copy-Item -Destination $Destination -Force -PassThru |
-        ForEach-Object { "  Create [.{0}]" -f $_.fullname.replace($PSScriptRoot, '')}
-
-    Get-ChildItem $source -Directory |
-        Where-Object name -NotIn $imports |
-        Copy-Item -Destination $Destination -Recurse -Force -PassThru |
-        ForEach-Object { "  Create [.{0}]" -f $_.fullname.replace($PSScriptRoot, '')}
-}
-
-TaskX BuildPSM1 @{
-    Inputs  = (Get-Item "$source\*\*.ps1")
-    Outputs = $ModulePath
-    Jobs    = {
-        [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
-        foreach ($folder in $imports )
-        {
-            [void]$stringbuilder.AppendLine( "Write-Verbose 'Importing from [$Source\$folder]'" )
-            if (Test-Path "$source\$folder")
-            {
-                $fileList = Get-ChildItem $source\$folder\ -Recurse -include *.ps1  | Where-Object Name -NotLike '*.Tests.ps1'
-                foreach ($file in $fileList)
-                {
-                    $shortName = $file.fullname.replace($PSScriptRoot, '')
-                    "  Importing [.$shortName]"
-                    [void]$stringbuilder.AppendLine( "# .$shortName" )
-                    [void]$stringbuilder.AppendLine( [System.IO.File]::ReadAllText($file.fullname) )
-                }
-            }
-        }
-
-        "  Creating module [$ModulePath]"
-        Set-Content -Path  $ModulePath -Value $stringbuilder.ToString()
-    }
-}
-
-TaskX BuildPSD1 @{
-    Inputs  = (Get-ChildItem $Source -Recurse -File)
-    Outputs = $ManifestPath
-    Jobs    = {
-
-        Write-Output "  Update [$ManifestPath]"
-        Copy-Item "$source\$ModuleName.psd1" -Destination $ManifestPath
-
-        $functions =  Get-ChildItem $source\Public -Recurse -include *.ps1 | Where-Object { $_.name -notmatch 'Tests'} | Select-Object -ExpandProperty basename
-        Set-ModuleFunctions -Name $ManifestPath -FunctionsToExport $functions
     }
 }
 
@@ -218,19 +160,41 @@ task Publish {
 }
 
 Task DocBuild {
-    New-ExternalHelp $docPath -OutputPath "$destination\EN-US"
+    New-ExternalHelp $DocPath -OutputPath "$destination\EN-US"
 }
 
 Task CreateUpdateDocs {
     
     If(-not (Test-Path $DocPath)){
-        "Creating Doucments path: DocPath"
+        "Creating Documents path: $DocPath"
         $null = New-Item -Type Directory -Path $DocPath -ErrorAction Ignore
     }
 
     "Creating new markdown files if any"
     New-MarkdownHelp -Module $modulename -OutputFolder $docpath -ErrorAction SilentlyContinue
-    "Updating existing markdown files."
+    "Updating existing markdown files"
     Update-MarkdownHelp $docpath
 
+}
+
+task ModuleBuild {
+    $pubFiles = Get-ChildItem "$Source\public" -Filter *.ps1 -File
+    $privFiles = Get-ChildItem "$Source\private" -Filter *.ps1 -File
+    If(-not(Test-Path $Destination)){
+        New-Item $destination -ItemType Directory
+    }
+    ForEach($file in ($pubFiles + $privFiles)) {
+        Get-Content $file.FullName | Out-File "$destination\$moduleName.psm1" -Append -Encoding utf8
+    }
+    Copy-Item "$Source\$moduleName.psd1" -Destination $destination
+
+    $moduleManifestData = @{
+        Author = $author
+        Copyright = "(c) $((get-date).Year) $companyname. All rights reserved."
+        Path = "$destination\$moduleName.psd1"
+        FunctionsToExport = $pubFiles.BaseName
+        RootModule = "$moduleName.psm1"
+        ProjectUri = "https://github.com/Continuous-Data/$modulename"
+    }
+    Update-ModuleManifest @moduleManifestData
 }
