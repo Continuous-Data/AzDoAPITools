@@ -1,6 +1,6 @@
 [cmdletbinding()]
 param(
-    [string[]]$Task = 'ModuleBuild'
+    [string[]]$Task = 'CICD'
 )
 
 $DependentModules = @('InvokeBuild', 'Buildhelpers', 'PSScriptAnalyzer', 'Pester', 'PSDeploy', 'PlatyPS') # add pester when pester tests are added
