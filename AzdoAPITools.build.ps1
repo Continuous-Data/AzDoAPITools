@@ -64,7 +64,7 @@ task Analyze {
 
 task Test {
     $invokePesterParams = @{
-        Strict = $true
+        #Strict = $true
         Passthru = $true
         Verbose = $false
         EnableExit = $true
