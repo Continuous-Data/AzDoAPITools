@@ -18,7 +18,7 @@ stages:
           - task: CopyFiles@2
             inputs:
               Contents: '$(modulename)*.*'
-              TargetFolder: '$(modulename)/buildoutput'
+              TargetFolder: '$(System.DefaultWorkingDirectory)/BuildOutput'
           - publish: $(System.DefaultWorkingDirectory)/BuildOutput
             artifact: $(ModuleName)
   - stage: Publish_to_PSGallery
