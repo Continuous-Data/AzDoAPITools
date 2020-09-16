@@ -15,6 +15,10 @@ stages:
               targetType: 'FilePath'
               filePath: $(System.DefaultWorkingDirectory)/build.ps1
               arguments: -task CICD
+          - task: CopyFiles@2
+            inputs:
+              Contents: '$(modulename)*.*,build.ps1'
+              TargetFolder: '$(modulename)/buildoutput'
           - publish: $(System.DefaultWorkingDirectory)/BuildOutput/$(Modulename)
             artifact: $(ModuleName)
   - stage: Publish_to_PSGallery
