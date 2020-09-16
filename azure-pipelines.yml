@@ -17,7 +17,9 @@ stages:
               arguments: -task CICD
           - task: CopyFiles@2
             inputs:
-              Contents: '$(modulename)*.*'
+              Contents: |
+                $(modulename)*.*
+                build.ps1
               TargetFolder: '$(System.DefaultWorkingDirectory)/BuildOutput'
           - publish: $(System.DefaultWorkingDirectory)/BuildOutput
             artifact: $(ModuleName)
