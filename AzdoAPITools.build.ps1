@@ -6,6 +6,7 @@ $Script:CompanyName = 'Continuous Data'
 $script:Source = Join-Path $BuildRoot Source
 $script:Output = Join-Path $BuildRoot BuildOutput
 $script:DocPath =  Join-Path $BuildRoot "docs\functions"
+$script:TestRoot = Join-Path $BuildRoot 'Tests\Unit'
 $script:Destination = Join-Path $Output $ModuleName
 $script:ModulePath = "$Destination\$ModuleName.psm1"
 $script:ManifestPath = "$Destination\$ModuleName.psd1"
@@ -63,18 +64,17 @@ task Analyze {
 }
 
 task Test {
+
     $invokePesterParams = @{
-        #Strict = $true
         Passthru = $true
         Verbose = $false
         EnableExit = $true
         OutputFile = 'Test-results.xml'
         OutputFormat = 'NunitXML'
-        Script = '.\Tests\unit'
-        
+        Path = $script:TestRoot  
     }
 
-    $testResults = Invoke-Pester @invokePesterParams;
+    $testResults = Invoke-Pester @invokePesterParams
 
     $numberFails = $testResults.FailedCount
     assert($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
