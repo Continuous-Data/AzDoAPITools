@@ -39,6 +39,8 @@ stages:
               targetType: 'FilePath'
               filePath: $(pipeline.workspace)/$(modulename)/build.ps1
               arguments: -task Publish
+            env:
+              PSGalleryKey : $(PSGalleryKey)
             
           
         

@@ -4,7 +4,7 @@ Deploy Module {
         To PSGallery
         WithOptions @{
             
-            nugetApiKey = $ENV:PSGalleryKey
+            ApiKey = $ENV:PSGalleryKey
         }
     }
 }
