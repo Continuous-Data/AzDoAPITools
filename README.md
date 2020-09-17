@@ -1,6 +1,6 @@
 # AzDoAPITools
 
-<!-- [![Build Status]()]() -->
+[![Build Status](https://dev.azure.com/ContinuousData/cdtestproject/_apis/build/status/tsteenbakkers.AzDoAPITools?branchName=master)](https://dev.azure.com/ContinuousData/cdtestproject/_build/latest?definitionId=4&branchName=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Continuous-Data/AzDoAPITools/blob/master/LICENSE)
 [![Documentation - AzDoAPITools](https://img.shields.io/badge/Documentation-AzDoAPITools-blue.svg)](https://github.com/Continuous-Data/AzDoAPITools/blob/master/docs/readme.md)
 [![PowerShell Gallery - AzDoAPITools](https://img.shields.io/badge/PowerShell%20Gallery-AzDoAPITools-blue.svg)](https://www.powershellgallery.com/packages/AzDoAPITools)
