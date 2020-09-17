@@ -3,7 +3,8 @@ Deploy Module {
         FromSource AzDoAPITools
         To PSGallery
         WithOptions @{
-            ApiKey = $ENV:PSGalleryKey
+            
+            nugetApiKey = $ENV:PSGalleryKey
         }
     }
 }
