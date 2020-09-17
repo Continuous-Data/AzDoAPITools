@@ -31,12 +31,13 @@ stages:
       - job: Publish
         displayName: 'Publish To PS Gallery'
         steps:
+          - checkout: none
           - download: current
             artifact: $(ModuleName)
           - task: PowerShell@2
             inputs:
               targetType: 'FilePath'
-              filePath: $(System.DefaultWorkingDirectory)/build.ps1
+              filePath: $(pipeline.workspace)/$(modulename)/build.ps1
               arguments: -task Publish
             
           
