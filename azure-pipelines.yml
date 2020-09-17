@@ -1,0 +1,58 @@
+pool:
+    vmImage: 'vs2017-win2016'
+variables:
+  Modulename: AzDoAPITools
+trigger:
+  batch: true
+  paths:
+    include:
+      - Source/*
+      - Tests/*
+    exclude:
+      - docs/*
+      - README.MD
+      - LICENSE.md
+      - Azure-pipelines.yml
+      - AzDoAPITools.*.ps1
+stages:
+  - stage: Build_test
+    displayName: 'Build & Test'
+    jobs:
+      - job: Build
+        displayName: 'Build & Test'
+        steps:
+          - checkout: self
+          - task: PowerShell@2
+            inputs:
+              targetType: 'FilePath'
+              filePath: $(System.DefaultWorkingDirectory)/build.ps1
+              arguments: -task CICD
+          - task: CopyFiles@2
+            inputs:
+              Contents: |
+                $(modulename)*.*
+                build.ps1
+              TargetFolder: '$(System.DefaultWorkingDirectory)/BuildOutput'
+          - publish: $(System.DefaultWorkingDirectory)/BuildOutput
+            artifact: $(ModuleName)
+  - stage: Publish_to_PSGallery
+    displayName: 'Publish to PS Gallery'
+    dependsOn: Build_test
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+      - job: Publish
+        displayName: 'Publish To PS Gallery'
+        steps:
+          - checkout: none
+          - download: current
+            artifact: $(ModuleName)
+          - task: PowerShell@2
+            inputs:
+              targetType: 'FilePath'
+              filePath: $(pipeline.workspace)/$(modulename)/build.ps1
+              arguments: -task Publish
+            env:
+              PSGalleryKey : $(PSGalleryKey)
+            
+          
+        

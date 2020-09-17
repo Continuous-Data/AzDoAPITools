@@ -1,0 +1,14 @@
+
+BuildOutput/
+
+Config/config.json
+
+Manual_test_script.ps1
+
+Test-results.xml
+
+testscriptdefinitions.ps1
+
+snippets.ps1
+
+.vscode/settings.json
