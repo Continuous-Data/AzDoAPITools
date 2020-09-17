@@ -2,6 +2,18 @@ pool:
     vmImage: 'vs2017-win2016'
 variables:
   Modulename: AzDoAPITools
+trigger:
+  batch: true
+  paths:
+    include:
+      - Source/*
+      - Tests/*
+    exclude:
+      - docs/*
+      - README.MD
+      - LICENSE.md
+      - Azure-pipelines.yml
+      - AzDoAPITools.*.ps1
 stages:
   - stage: Build_test
     displayName: 'Build & Test'
