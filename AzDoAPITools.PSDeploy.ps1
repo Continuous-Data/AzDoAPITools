@@ -1,6 +1,6 @@
 Deploy Module {
     By PSGalleryModule {
-        FromSource BuildOutput\AzDoAPITools
+        FromSource AzDoAPITools
         To PSGallery
         WithOptions @{
             ApiKey = $ENV:PSGalleryKey

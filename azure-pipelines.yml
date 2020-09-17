@@ -26,13 +26,18 @@ stages:
   - stage: Publish_to_PSGallery
     displayName: 'Publish to PS Gallery'
     dependsOn: Build_test
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - job: Publish
         displayName: 'Publish To PS Gallery'
         steps:
           - download: current
             artifact: $(ModuleName)
+          - task: PowerShell@2
+            inputs:
+              targetType: 'FilePath'
+              filePath: $(System.DefaultWorkingDirectory)/build.ps1
+              arguments: -task Publish
             
           
         
