@@ -4,7 +4,7 @@ Welcome to the AzDoAPITools Documentation page. This page will help you get star
 
 ## Installation and setup
 
-- Install from the powershell gallery or build locally
+- Install from the [Powershell Gallery](https://www.powershellgallery.com/packages/AzdoAPITools) or [build locally](././readme.md/#how-to-build-local)
 - Run Set-AzDoAPIToolsConfig to create a config.json file in %AppData%\AzDoAPITools
 - Run separate functions or check the areas below
 

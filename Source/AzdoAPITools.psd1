@@ -30,7 +30,7 @@ CompanyName = 'Continuous Data'
 Copyright = '(c) 2020 Continuous Data. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Set of Powershell functions to perform all kinds of operations on Azure DevOps such as converting classical to yaml pipelines'
+Description = 'Set of Powershell functions to converting classical to YAML pipelines / Task Group to YAML templates on Azure DevOps'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.1'

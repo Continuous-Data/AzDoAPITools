@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Continuous-Data/AzDoAPITools/blob/master/LICENSE)
 [![Documentation - AzDoAPITools](https://img.shields.io/badge/Documentation-AzDoAPITools-blue.svg)](https://github.com/Continuous-Data/AzDoAPITools/blob/master/docs/readme.md)
 [![PowerShell Gallery - AzDoAPITools](https://img.shields.io/badge/PowerShell%20Gallery-AzDoAPITools-blue.svg)](https://www.powershellgallery.com/packages/AzDoAPITools)
-[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.0-blue.svg)](https://github.com/PowerShell/PowerShell)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/PowerShell/PowerShell)
 
 ## Introduction
 
@@ -14,15 +14,15 @@ In the future you can expect other automations which i have done for customers s
 
 ## Requirements
 
-- Powershell 5.0
+- Powershell 5.1
 
 ## Module Dependancies
 
-[Powershell-YAML](https://www.powershellgallery.com/packages/powershell-yaml) is required if you want to create \*.yml files with this Module. If you have a different method to convert a PSObject to YAML this module is optional. The module is capable of delivering a PSObject with all YAML components inside found in your Task Group / Definition.
+[Powershell-YAML](https://www.powershellgallery.com/packages/powershell-yaml) is required if you want to create \*.yml files with this Module. The module is capable of delivering a PSObject with all YAML components inside found in your Task Group / Definition if you wish to use a different convert to YAML tool.
 
 ## installation
 
-Install this module from the Powershell Gallery
+Install this module from the [Powershell Gallery](https://www.powershellgallery.com/packages/AzdoAPITools) or by performing `Install-Module -Name AzdoAPITools`
 
 ## First Time use
 
@@ -40,7 +40,7 @@ You can find generic documentation [here](/docs/README.md) or check specific fun
 - Retrieve details of Build / Release Definitions & Task Groups based of (a list of) names
 - Filter Task Groups API to return highest / draft / preview of a Task Group
 
-## How to Build locally
+## How to Build local
 
 - Download Source code / Clone repo
 - Run Invoke-Build from the modules root directory
@@ -49,6 +49,8 @@ You can find generic documentation [here](/docs/README.md) or check specific fun
     - Buildhelpers
     - PSScriptAnalyzer
     - Pester
+    - PSDeploy
+    - PlatyPS
 - Load the module from the BuildOutput folder
 
 ## Pester Tests
