@@ -46,14 +46,24 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                 ### Adding displayname
                 $definitionjob.add('displayName',$job.name)
                 ### add job pool properties
-                if ($custompool) {
+                if ($custompool -and $job.target.type -eq 1) {
 
                     $poolToAdd = Get-AzDoAPIToolsAgentPool -poolURL $job.target.queue._links.self.href -AgentIdentifier $job.target.agentSpecification.identifier
-                    if ($pooltoAdd.count -ge 1) {
-                        $definitionjob.add('pool',$poolToAdd)
-                    }
-                }elseif($job.target.type -eq 2){
-                    $definitionjob.add('pool','server')
+                    
+                }elseif (!$custompool -and $job.target.type -eq 1) {
+
+                    $poolToAdd = Get-AzDoAPIToolsAgentPool -PoolURL $definition.queue._links.self.href -agentidentifier $definition.process.target.agentSpecification.identifier
+                }
+                elseif($job.target.type -eq 2){
+
+                    $poolToAdd = 'server'
+                }
+
+                if ($pooltoAdd.count -ge 1) {
+                    $definitionjob.add('pool',$poolToAdd)
+                }
+
+                ### Adding job demands
                 }
 
                 $jobproperties = Get-TaskProperties -InputTaskObject $job -propertiestoskip @('steps','target','name','refname','jobAuthorizationScope','dependencies')
