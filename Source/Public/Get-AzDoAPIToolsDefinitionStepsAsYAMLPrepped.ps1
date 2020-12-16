@@ -50,6 +50,8 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                     if ($pooltoAdd.count -ge 1) {
                         $definitionjob.add('pool',$poolToAdd)
                     }
+                }elseif($job.target.type -eq 2){
+                    $definitionjob.add('pool','server')
                 }
 
                 $jobproperties = Get-TaskProperties -InputTaskObject $job -propertiestoskip @('steps','target','name','refname','jobAuthorizationScope','dependencies')
