@@ -43,6 +43,8 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
               if ($jobcount -gt 1 -or $custompool) {
                   
                 $definitionjob.add('job',$job.name.replace(" ","_"))
+                ### Adding displayname
+                $definitionjob.add('displayName',$job.name)
                 ### add job pool properties
                 if ($custompool) {
 
