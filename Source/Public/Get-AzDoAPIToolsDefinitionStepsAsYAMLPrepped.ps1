@@ -28,19 +28,24 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
            $definitionjobs = @()
            $retunreddefinitionjobs = [ordered]@{}
            $phaserefs = @{}
+           [bool]$pipelinedemands = ($definition.PSobject.Properties.name.contains('demands'))
 
            foreach ($job in $jobs) {
+
                $definitionsteps = [ordered]@{}
-                $definitionjob = [ordered]@{}
+               $definitionjob = [ordered]@{}
+
               $steps = Convert-TaskStepsToYAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
               
               [bool]$custompool = ($job.target.PSobject.Properties.name.contains('queue'))
 
               [bool]$dependencies = ($job.PSobject.Properties.name.contains('dependencies'))
 
+              [bool]$jobdemands = ($job.target.PSobject.Properties.name.contains('demands'))
+
               $phaserefs.Add($job.refName,$job.name)
 
-              if ($jobcount -gt 1 -or $custompool) {
+              if ($jobcount -gt 1 -or $custompool -or $pipelinedemands -or $jobdemands) {
                   
                 $definitionjob.add('job',$job.name.replace(" ","_"))
                 ### Adding displayname
@@ -64,6 +69,21 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                 }
 
                 ### Adding job demands
+                if ($jobdemands) {
+                    $demandstoadd += $job.target.demands
+                }
+
+                if ($pipelinedemands) {
+                    $demandstoadd += $definition.demands
+                }
+
+                if ($demandstoadd.count -ge 1 -and $job.target.type -eq 1) {
+                    if($definitionjob.Contains('pool')){
+                        $definitionjob.pool.add('demands',$demandstoadd)
+                    }else{
+                        Write-Error "No Pool construct found to add demands to."
+                    }
+                    
                 }
 
                 $jobproperties = Get-TaskProperties -InputTaskObject $job -propertiestoskip @('steps','target','name','refname','jobAuthorizationScope','dependencies')
@@ -90,7 +110,7 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
               }
            }
 
-           if ($jobcount -gt 1 -or $custompool) {
+           if ($jobcount -gt 1 -or $custompool -or $pipelinedemands -or $jobdemands) {
                $retunreddefinitionjobs.add('jobs',$definitionjobs)
 
                return $retunreddefinitionjobs
