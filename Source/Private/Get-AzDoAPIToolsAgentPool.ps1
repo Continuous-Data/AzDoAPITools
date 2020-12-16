@@ -13,7 +13,7 @@ function Get-AzDoAPIToolsAgentPool {
     
     
     process {
-        $returnedpool = @{}
+        $returnedpool = [ordered]@{}
         $pool = Use-AzDoAPI -url $PoolURL -method 'get'
         
         if ($pool.pool.isHosted -eq 'true') {
