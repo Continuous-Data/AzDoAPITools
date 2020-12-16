@@ -78,6 +78,10 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                     $definitionjob.add('dependsOn',$dependancy.replace(" ","_"))
                 }
 
+                if (!$steps.count -ge 1){
+                    $steps = @()
+                }
+
                 $definitionjob.add('steps',$steps)
                 
                 $definitionjobs += $definitionjob
