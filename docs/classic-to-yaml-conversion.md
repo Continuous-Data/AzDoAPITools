@@ -662,6 +662,10 @@ Right now all the URL creation function allows for Azure DevOps URL creation. it
 
 Right now the use-cases at the clients i've worked with was to deal with Azure DevOps hosted source code. I will need to do investigation / confirmation that this also works if you host your code externally and if not what changes are needed to incorporate this.
 
+### Multi-agent & sliced agent configuration on jobs
+
+multi-agent jobs are not supported. Neither is slicing. You can find more about Multi-Agent config [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#multi-job-configuration) and more on slicing [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#slicing). I have never worked with these setups nor am I aware of many companies using this. When I get some time I will dive into it.
+
 ### Release Definitions
 
 I wanted to push this Module to GitHub and make it publicly available knowing this feature was not implemented yet. The reason is that release definitions are quite complex and are not fully compatible between classical vs YAML Pipelines. This has to do predominantly with the [manual stages limitation](#Manual-stages-in-Release-Definitions). whenever Microsoft fixes this I will continue working on this. If interest is high enough I will make efforts into converting Classical Release Definitons to YAML pipelines knowing there is a serious limitation to the product by Microsoft.
