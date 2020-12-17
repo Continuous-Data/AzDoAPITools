@@ -38,6 +38,16 @@ function Get-TaskProperties {
                         $FilteredTaskProperties | Add-Member -NotePropertyName $propertyname -NotePropertyValue $propertyvalue
                     }
                 }
+                jobTimeoutInMinutes {
+                    if($propertyvalue -ne 0){
+                        $FilteredTaskProperties | Add-Member -NotePropertyName 'timeoutInMinutes' -NotePropertyValue $propertyvalue
+                    }
+                }
+                jobCancelTimeoutInMinutes {
+                    if($propertyvalue -ne 0){
+                        $FilteredTaskProperties | Add-Member -NotePropertyName 'cancelTimeoutInMinutes' -NotePropertyValue $propertyvalue
+                    }
+                }
                 Default {
                     $FilteredTaskProperties | Add-Member -NotePropertyName $propertyname -NotePropertyValue $propertyvalue
                 }
