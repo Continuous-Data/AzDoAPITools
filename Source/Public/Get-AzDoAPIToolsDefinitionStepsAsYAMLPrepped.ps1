@@ -95,6 +95,7 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                     $definitionjob.add('dependsOn',$job.dependencies.scope)
                 }
 
+                # emptying steps construct if no steps were found resulting in steps:[]
                 if (!$steps.count -ge 1){
                     $steps = @()
                 }
