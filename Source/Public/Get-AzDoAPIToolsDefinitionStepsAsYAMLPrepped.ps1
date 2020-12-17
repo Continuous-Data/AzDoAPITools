@@ -27,13 +27,13 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
            $jobcount = $jobs.count
            $definitionjobs = @()
            $retunreddefinitionjobs = [ordered]@{}
-           $phaserefs = @{}
            [bool]$pipelinedemands = ($definition.PSobject.Properties.name.contains('demands'))
 
            foreach ($job in $jobs) {
 
                $definitionsteps = [ordered]@{}
                $definitionjob = [ordered]@{}
+               $demandstoadd = $null
 
               $steps = Convert-TaskStepsToYAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
               
@@ -43,11 +43,9 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
 
               [bool]$jobdemands = ($job.target.PSobject.Properties.name.contains('demands'))
 
-              $phaserefs.Add($job.refName,$job.name)
-
               if ($jobcount -gt 1 -or $custompool -or $pipelinedemands -or $jobdemands) {
                   
-                $definitionjob.add('job',$job.name.replace(" ","_"))
+                $definitionjob.add('job',$job.refName)
                 ### Adding displayname
                 $definitionjob.add('displayName',$job.name)
                 ### add job pool properties
@@ -94,10 +92,10 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
 
                 #add section for dependancies
                 if ($dependencies) {
-                    $dependancy = $phaserefs.$($job.dependencies.scope)
-                    $definitionjob.add('dependsOn',$dependancy.replace(" ","_"))
+                    $definitionjob.add('dependsOn',$job.dependencies.scope)
                 }
 
+                # emptying steps construct if no steps were found resulting in steps:[]
                 if (!$steps.count -ge 1){
                     $steps = @()
                 }
