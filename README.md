@@ -1,6 +1,6 @@
 # AzDoAPITools
 
-[![Build Status](https://dev.azure.com/ContinuousData/cdtestproject/_apis/build/status/tsteenbakkers.AzDoAPITools?branchName=master)](https://dev.azure.com/ContinuousData/cdtestproject/_build/latest?definitionId=4&branchName=master)
+[![Build Status](https://dev.azure.com/ContinuousData/cdtestproject/_apis/build/status/tsteenbakkers.AzDoAPITools?repoName=Continuous-Data%2FAzDoAPITools&branchName=master)](https://dev.azure.com/ContinuousData/cdtestproject/_build/latest?definitionId=4&repoName=Continuous-Data%2FAzDoAPITools&branchName=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 [![Documentation - AzDoAPITools](https://img.shields.io/badge/Documentation-AzDoAPITools-blue.svg)](./docs/README.md)
 [![PowerShell Gallery - AzDoAPITools](https://img.shields.io/badge/PowerShell%20Gallery-AzDoAPITools-blue.svg)](https://www.powershellgallery.com/packages/AzDoAPITools)
@@ -11,6 +11,8 @@
 AzDoAPITools is a project which was born while doing a migration from classical pipelines (GUI-based) to YAML pipelines (Pipeline as code) for a customer. Which is the current function of the published module. The module will convert Task Groups and classical build pipelines to usable all in one YAML pipelines / step templates.
 
 In the future you can expect other automations which i have done for customers such as automatic branching / mass policy application etc. to be bundled in this module.
+
+In [this blog post](https://www.continuous-data.nl/tools/intro-azdoapitools/) I have written an introduction into this tool and in [this blog post](https://www.continuous-data.nl/azure-devops/full-review-of-the-new-export-to-yaml-feature-in-azure-devops/) there is a comparison with the in-built "Export to YAML" functionality which was created by Microsoft in November 2020.
 
 ## Requirements
 
