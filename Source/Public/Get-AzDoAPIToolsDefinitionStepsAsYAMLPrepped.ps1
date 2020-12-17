@@ -33,6 +33,7 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
 
                $definitionsteps = [ordered]@{}
                $definitionjob = [ordered]@{}
+               $demandstoadd = $null
 
               $steps = Convert-TaskStepsToYAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
               
