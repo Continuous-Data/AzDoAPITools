@@ -28,28 +28,62 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
            $definitionjobs = @()
            $retunreddefinitionjobs = [ordered]@{}
            $phaserefs = @{}
+           [bool]$pipelinedemands = ($definition.PSobject.Properties.name.contains('demands'))
 
            foreach ($job in $jobs) {
+
                $definitionsteps = [ordered]@{}
-                $definitionjob = [ordered]@{}
+               $definitionjob = [ordered]@{}
+
               $steps = Convert-TaskStepsToYAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
               
               [bool]$custompool = ($job.target.PSobject.Properties.name.contains('queue'))
 
               [bool]$dependencies = ($job.PSobject.Properties.name.contains('dependencies'))
 
+              [bool]$jobdemands = ($job.target.PSobject.Properties.name.contains('demands'))
+
               $phaserefs.Add($job.refName,$job.name)
 
-              if ($jobcount -gt 1 -or $custompool) {
+              if ($jobcount -gt 1 -or $custompool -or $pipelinedemands -or $jobdemands) {
                   
                 $definitionjob.add('job',$job.name.replace(" ","_"))
+                ### Adding displayname
+                $definitionjob.add('displayName',$job.name)
                 ### add job pool properties
-                if ($custompool) {
+                if ($custompool -and $job.target.type -eq 1) {
 
                     $poolToAdd = Get-AzDoAPIToolsAgentPool -poolURL $job.target.queue._links.self.href -AgentIdentifier $job.target.agentSpecification.identifier
-                    if ($pooltoAdd.count -ge 1) {
-                        $definitionjob.add('pool',$poolToAdd)
+                    
+                }elseif (!$custompool -and $job.target.type -eq 1) {
+
+                    $poolToAdd = Get-AzDoAPIToolsAgentPool -PoolURL $definition.queue._links.self.href -agentidentifier $definition.process.target.agentSpecification.identifier
+                }
+                elseif($job.target.type -eq 2){
+
+                    $poolToAdd = 'server'
+                }
+
+                if ($pooltoAdd.count -ge 1) {
+                    $definitionjob.add('pool',$poolToAdd)
+                }
+
+                ### Adding job demands
+                if ($jobdemands) {
+                    $demandstoadd += $job.target.demands
+                }
+
+                if ($pipelinedemands) {
+                    $demandstoadd += $definition.demands
+                }
+
+                if ($demandstoadd.count -ge 1 -and $job.target.type -eq 1) {
+                    if($definitionjob.Contains('pool')){
+                        $definitionjob.pool.add('demands',$demandstoadd)
+                    }else{
+                        Write-Error "No Pool construct found to add demands to."
                     }
+                    
                 }
 
                 $jobproperties = Get-TaskProperties -InputTaskObject $job -propertiestoskip @('steps','target','name','refname','jobAuthorizationScope','dependencies')
@@ -64,6 +98,10 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                     $definitionjob.add('dependsOn',$dependancy.replace(" ","_"))
                 }
 
+                if (!$steps.count -ge 1){
+                    $steps = @()
+                }
+
                 $definitionjob.add('steps',$steps)
                 
                 $definitionjobs += $definitionjob
@@ -72,7 +110,7 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
               }
            }
 
-           if ($jobcount -gt 1 -or $custompool) {
+           if ($jobcount -gt 1 -or $custompool -or $pipelinedemands -or $jobdemands) {
                $retunreddefinitionjobs.add('jobs',$definitionjobs)
 
                return $retunreddefinitionjobs
