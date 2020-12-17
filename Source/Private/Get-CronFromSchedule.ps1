@@ -44,7 +44,7 @@ function Get-CronFromSchedule {
                         
                         $SourceTimezone = [System.TimeZoneInfo]::FindSystemTimeZoneById($schedule.timezoneid)
                         
-                        if($SourceTimezone.SupportsDaylightSavingTime -eq $true){
+                        if($SourceTimezone.SupportsDaylightSavingTime -eq $true -and $datetimetoconvert.IsDaylightSavingTime() -eq $true){
                             $datetimetoconvert = $datetimetoconvert.AddHours(1)
                         }
 
