@@ -37,7 +37,7 @@ function Convert-TaskStepsToYAMLSteps {
 
         if($steps.count -ge 1){
             $taskscount = $input.count
-            $convertedsteps = @()
+            [array]$convertedsteps = @()
             $convertedcount = 0
             Write-verbose "Found $taskscount tasks"
             foreach ($step in $steps) {
@@ -73,15 +73,15 @@ function Convert-TaskStepsToYAMLSteps {
                     }
                     
                     #### Adding Step to Steps
-                    $convertedsteps += $yamlstep
+                    [array]$convertedsteps += $yamlstep
 
                 }elseif($step.task.definitionType -eq 'metaTask' -and $step.enabled -eq 'true'){
 
                     $TGtemplate = Get-AzDoAPIToolsDefinitionsTaskGroupsByID -ID $stepid -TGVersion $stepversion -ApiType 'TaskGroup' -Projectname $projectname -profilename $profilename
 
                     if ($ExpandNestedTaskGroups.IsPresent) {
-                        $nestedtaskgrouptasks = Convert-TaskStepsToYAMLSteps -profilename $profilename -Projectname $projectname -InputArray $TGTemplate -ExpandNestedTaskGroups -inputType $tgtemplate.type -parentinputtype $inputtype
-                        $convertedsteps += $nestedtaskgrouptasks
+                        [array]$nestedtaskgrouptasks = Convert-TaskStepsToYAMLSteps -profilename $profilename -Projectname $projectname -InputArray $TGTemplate -ExpandNestedTaskGroups -inputType $tgtemplate.type -parentinputtype $inputtype
+                        [array]$convertedsteps += $nestedtaskgrouptasks
                     }else {
                         
                         $TGTemplateName = "$($TGTemplate.name).yml"
@@ -95,7 +95,7 @@ function Convert-TaskStepsToYAMLSteps {
                             
                         }
                         
-                        $convertedsteps += $yamlstep
+                        [array]$convertedsteps += $yamlstep
                     }
                     
                 }
@@ -106,7 +106,9 @@ function Convert-TaskStepsToYAMLSteps {
         }else{
             Write-Verbose 'No Tasks found. skipping steps.'
         }
-
+    if ($convertedsteps.Count -lt 1) {
+        [array]$convertedsteps = @()
+    }
     return $convertedsteps
     } 
     
