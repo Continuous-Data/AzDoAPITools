@@ -27,7 +27,6 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
            $jobcount = $jobs.count
            $definitionjobs = @()
            $retunreddefinitionjobs = [ordered]@{}
-           $phaserefs = @{}
            [bool]$pipelinedemands = ($definition.PSobject.Properties.name.contains('demands'))
 
            foreach ($job in $jobs) {
@@ -43,11 +42,9 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
 
               [bool]$jobdemands = ($job.target.PSobject.Properties.name.contains('demands'))
 
-              $phaserefs.Add($job.refName,$job.name)
-
               if ($jobcount -gt 1 -or $custompool -or $pipelinedemands -or $jobdemands) {
                   
-                $definitionjob.add('job',$job.name.replace(" ","_"))
+                $definitionjob.add('job',$job.refName)
                 ### Adding displayname
                 $definitionjob.add('displayName',$job.name)
                 ### add job pool properties
@@ -94,8 +91,7 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
 
                 #add section for dependancies
                 if ($dependencies) {
-                    $dependancy = $phaserefs.$($job.dependencies.scope)
-                    $definitionjob.add('dependsOn',$dependancy.replace(" ","_"))
+                    $definitionjob.add('dependsOn',$job.dependencies.scope)
                 }
 
                 if (!$steps.count -ge 1){
