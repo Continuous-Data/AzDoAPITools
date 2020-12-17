@@ -335,18 +335,7 @@ steps:
 ![Agent Job part 2](./images/2020-09-10-16-17-45.png)
 *Job properties part 2*
 
-On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Those are ignored for now and is on the [ToDo list](#Include-agent-pool-demands-for-custom-self-hosted-pools). in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
-
-```yaml
-jobs:
-- job: Agent_job_1
-  pool:
-    name: Default
-```
-
-Notice how the job name is converted from Agent Job 1 to Agent_job_1. This has to do with the notation limit of job aliases in YAML pipelines. They cannot include spaces.
-
-When the ToDo is finished for demands the result should look like this:
+On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Demands will be converted for Agent Jobs only. They are [best used](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/demands?view=azure-devops&tabs=yaml) in Self-Hosted agents but are also supported for MS Hosted agents. in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
 
 ```yaml
 jobs:
@@ -356,7 +345,11 @@ jobs:
   demands:
   - inlinedemand1
   - inlinedemand2 -equals inlinevalue1
+  - testdemand
+  - testdemand2 -equals valuedemand2
 ```
+
+Notice how the job name is converted from Agent Job 1 to Agent_job_1. This has to do with the notation limit of job aliases in YAML pipelines. They cannot include spaces. also notice the extra demands 'testdemand' & 'testdemand2 -equals valuedemand2'. These come from the options tab (see below) of the pipeline itself.
 
 ---
 
@@ -557,7 +550,7 @@ name: $(buildid)-custompart-example
 
 Other settings like timeoutinminuts and jobcanceltimeout which are mentioned here are valid for every job inside the Build Definition. I guess I could apply them to every job inside the pipeline if they are not the default settings. This is not implemented yet. See [this topic](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?tabs=yaml&view=azure-devops#timeouts) by Microsoft to see the correct YAML notation if you wish to apply it yourself. If you have specified a Job timeout in the Job part of the pipeline for that specific job it will be converted as a job property.
 
-Demands is something which is also a [pending feature](#Include-agent-pool-demands-for-custom-self-hosted-pools). The demands specified here are valid for the pipeline agent pool specified not the ones in jobs.
+The demands specified here will be copied over to each job using a Microsoft-Hosted or Self-Hosted Agent.
 
 ## Assumptions
 
@@ -641,10 +634,6 @@ According to [this](https://developercommunity.visualstudio.com/idea/697467/manu
 ## ToDo list
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority I gave them.
-
-### Include agent pool demands for custom self-hosted pools
-
-Currently demands for Self-hosted pools are ignored. This will be added asap. This will only be implemented for Self-Hosted pools as Microsoft decided that for YAML they only allow demands for custom pools. if you have demands for Microsoft hosted pools (which you can set in the GUI) they will be ingored.
 
 ### Apply resource checkout options
 
