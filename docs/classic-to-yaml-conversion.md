@@ -339,7 +339,8 @@ On to the agent job specific settings we can see that a custom pool is being use
 
 ```yaml
 jobs:
-- job: Agent_job_1
+- job: job_1
+  displayName: Agent Job 1
   pool:
     name: Default
   demands:
@@ -349,7 +350,7 @@ jobs:
   - testdemand2 -equals valuedemand2
 ```
 
-Notice how the job name is converted from Agent Job 1 to Agent_job_1. This has to do with the notation limit of job aliases in YAML pipelines. They cannot include spaces. also notice the extra demands 'testdemand' & 'testdemand2 -equals valuedemand2'. These come from the options tab (see below) of the pipeline itself.
+Notice how the extra demands 'testdemand' & 'testdemand2 -equals valuedemand2'. These come from the options tab (see below) of the pipeline itself. The job name you have configured in the UI will be used as the displayName property and the actual job name will be the internal ID from the REST API.
 
 ---
 
@@ -542,10 +543,10 @@ On the options tab there is not much we need to take into consideration. If you 
 name: $(buildid)-custompart-example
 ```
 
-if the Build Number format field is empty we default to the `$(buildid)`:
+if the Build Number format field is empty we default to the `$(buildid)`. It can be omitted because it is a default value but I've chosen to make it clear this can be customizable:
 
 ```yaml
-name: $(buildid)-custompart-example
+name: $(buildid)
 ```
 
 Other settings like timeoutinminuts and jobcanceltimeout which are mentioned here are valid for every job inside the Build Definition. I guess I could apply them to every job inside the pipeline if they are not the default settings. This is not implemented yet. See [this topic](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?tabs=yaml&view=azure-devops#timeouts) by Microsoft to see the correct YAML notation if you wish to apply it yourself. If you have specified a Job timeout in the Job part of the pipeline for that specific job it will be converted as a job property.
