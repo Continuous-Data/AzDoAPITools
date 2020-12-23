@@ -109,7 +109,7 @@ function Convert-TaskStepsToYAMLSteps {
     if ($convertedsteps.Count -lt 1) {
         [array]$convertedsteps = @()
     }
-    return $convertedsteps
+    return [array]$convertedsteps
     } 
     
 }
