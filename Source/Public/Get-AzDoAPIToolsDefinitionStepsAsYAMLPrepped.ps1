@@ -95,11 +95,11 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                 if ($dependencies) {
                     $definitionjob.add('dependsOn',$job.dependencies.scope)
                 }
+                
+                #populating jobs/steps
 
-                # emptying steps construct if no steps were found resulting in steps:[]
-                if (!$steps.count -ge 1){
-                    $steps = @()
-                }
+                [array]$steps = Convert-TaskStepsToYAMLSteps -InputArray $job -Projectname $projectname -profilename $profilename -inputtype $definitiontype -ExpandNestedTaskGroups:$ExpandNestedTaskGroups.isPresent
+
 
                 $definitionjob.add('steps',$steps)
                 
