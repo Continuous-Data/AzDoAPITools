@@ -635,10 +635,6 @@ According to [this](https://developercommunity.visualstudio.com/idea/697467/manu
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority I gave them.
 
-### Apply resource checkout options
-
-stuff like checkout: clean, LFS and other git options which are specified in a build definitions sources part needs to be translated to steps - checkout options.
-
 ### Converted parameters from queue time variables are called as variable instead of a parameter
 
 When converting variables to parameters which have the AllowOveride property and are thus settable at queue time are put into the parameters section of the YAML file.
