@@ -124,10 +124,31 @@ function Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped {
                     
                 }
                 ### Adding Job Properties
+                
+                #pipeline specific timeouts
+                if($definition.jobTimeoutInMinutes -ne 60){
+                    $definitionjob.add('timeoutInMinutes',$definition.jobTimeoutInMinutes)
+
+                }
+
+                if($definition.jobCancelTimeoutInMinutes -ne 5){
+                    $definitionjob.add('cancelTimeoutInMinutes',$definition.jobCancelTimeoutInMinutes)
+                }
+
+                #job specific properties
                 $jobproperties = Get-TaskProperties -InputTaskObject $job -propertiestoskip @('steps','target','name','refname','jobAuthorizationScope','dependencies')
                     
                 $jobproperties.PSObject.Properties | ForEach-Object{
-                    $definitionjob.add($_.name,$_.value)
+                    if ($_.name -eq 'timeoutInMinutes' -and ($definitionjob.timeoutInMinutes)) {
+                        $definitionjob.timeoutInMinutes = $_.value
+                        
+                    }elseif ($_.name -eq 'cancelTimeoutInMinutes' -and ($definitionjob.cancelTimeoutInMinutes)) {
+                        $definitionjob.cancelTimeoutInMinutes = $_.value
+                        
+                    }else{
+                        $definitionjob.add($_.name,$_.value)
+                    }
+                    
                 }
 
                 #add section for dependancies
