@@ -18,7 +18,7 @@ Get-AzDoAPIToolsDefinitionStepsAsYAMLPrepped [-InputDefinitions] <Array> [-Proje
 ```
 
 ## DESCRIPTION
-This function takes one or more Build Definition where metadata is present from `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` or `Get-AzDoAPIToolsDefinitionsTaskGroupsByID` and extracts the schedules from it and prepare it for conversion use in a YAML Pipeline. If desired use `Convert-AzDoAPIToolsYamlObjectToYAMLFile` to convert the extracted elements to a seperate yml file.
+This function takes one or more Build Definition where metadata is present from `Get-AzDoAPIToolsDefinitionsTaskGroupsByNamesList` or `Get-AzDoAPIToolsDefinitionsTaskGroupsByID` and extracts the jobs and steps from it and prepare it for conversion use in a YAML Pipeline. this includes any specific step properties and job properties. If desired use `Convert-AzDoAPIToolsYamlObjectToYAMLFile` to convert the extracted elements to a seperate yml file.
 
 ## EXAMPLES
 

@@ -9,7 +9,7 @@ function Get-DefinitionInputIncludeExclude {
     begin{
         $included = @()
         $excluded = @()
-        $return = @()
+        $return = [ordered]@{}
         $regex = '^([\+\-])[\\\/]?(.+)'
     }
     
@@ -30,17 +30,11 @@ function Get-DefinitionInputIncludeExclude {
     end{
         
         if ($included.count -ge 1) {
-            $includedinput = @{
-                'include' = $included
-            }
-            $return += $includedinput
+            $return.add('include',$included)
         }
 
         if ($excluded.count -ge 1) {
-            $excludedinput = @{
-                'exclude' = $excluded
-            }
-            $return += $excludedinput
+            $return.add('exclude',$excluded)
         }  
 
         return $return

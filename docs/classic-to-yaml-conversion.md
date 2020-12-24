@@ -16,13 +16,15 @@ This module does exactly that and automatically. It currently has two main featu
   - Task Groups: When a Task Group is found it can either be added as \-template: or be expanded and added as \-task:
   - Inputs: Task Group Inputs are converted to template parameters
 - Convert Build Definitions to YAML Pipelines including pipelines properties such as:
+  - Pipelines resources (for non Azure DevOps sources)
   - Triggers: (both Path and Branch)
   - Schedules: (already converted into CRON and UTC w/o DST)
   - Variables: (Secret variables are skipped and settable at queue time will be converted to pipeline parameters)
   - Agent Pools: (both at job and pipeline level)
-  - Jobs: (and interdependendancies between them such as dependancies and conditions)
+  - Jobs: (jop properties, demands and interdependendancies between them such as dependancies and conditions)
   - steps: (including non-default properties, inputs and conditions)
   - Task Groups: When a Task Group is found it can either be added as \-template: or be expanded and added as \-task:
+  - Pipeline properties such as checkout options, lfs, submodules etc.
 
 The result of this conversion can either be used as a PSObject or be converted into a \*.yml file for direct usage. In the future I will create functionality to also import the results of the conversion as a new YAML Pipeline definition inside Azure DevOps. For items such as definition specific properties (triggers, schedules etc.) it will be an option to include them in the YAML file or you wish so (not recommended) have them be part of your YAML Pipeline definition.
 
@@ -315,7 +317,7 @@ pool:
 ![sources](./images/2020-09-10-16-08-53.png)
 *sources properties*
 
-Looking at the Sources section we can see several checkout options. Currently these will be ignored. This is on the [ToDo list](#Apply-resource-checkout-options). After conversion it should look like this:
+Looking at the Sources section we can see several checkout options. These are supported since version 1.1 and will show up in the following syntax if applicaple:
 
 ```yaml
 steps:
@@ -324,7 +326,6 @@ steps:
   fetchDepth: number
   lfs: true | false  
   submodules: true | recursive
-  path: string
   persistCredentials: true | false
 ```
 
@@ -335,28 +336,22 @@ steps:
 ![Agent Job part 2](./images/2020-09-10-16-17-45.png)
 *Job properties part 2*
 
-On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Those are ignored for now and is on the [ToDo list](#Include-agent-pool-demands-for-custom-self-hosted-pools). in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
+On to the agent job specific settings we can see that a custom pool is being used. More specifically the Default Pool. Also we can see two demands for the agents. Demands will be converted for Agent Jobs only. They are [best used](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/demands?view=azure-devops&tabs=yaml) in Self-Hosted agents but are also supported for MS Hosted agents. in the second image we can see that there are no dependancies and other properties are default. Since this job uses a different agent pool as the pipeline we can't omit the jobs / job section in YAML and as such the result will be converted like this:
 
 ```yaml
 jobs:
-- job: Agent_job_1
-  pool:
-    name: Default
-```
-
-Notice how the job name is converted from Agent Job 1 to Agent_job_1. This has to do with the notation limit of job aliases in YAML pipelines. They cannot include spaces.
-
-When the ToDo is finished for demands the result should look like this:
-
-```yaml
-jobs:
-- job: Agent_job_1
+- job: job_1
+  displayName: Agent Job 1
   pool:
     name: Default
   demands:
   - inlinedemand1
   - inlinedemand2 -equals inlinevalue1
+  - testdemand
+  - testdemand2 -equals valuedemand2
 ```
+
+Notice how the extra demands 'testdemand' & 'testdemand2 -equals valuedemand2'. These come from the options tab (see below) of the pipeline itself. The job name you have configured in the UI will be used as the displayName property and the actual job name will be the internal ID from the REST API.
 
 ---
 
@@ -455,9 +450,9 @@ trigger:
     include:
     - refs/heads/master
   paths:
-  - include:
+    include:
     - pathtoinclude
-  - exclude:
+    exclude:
     - pathtoexclude
   batch: true
 ```
@@ -549,15 +544,13 @@ On the options tab there is not much we need to take into consideration. If you 
 name: $(buildid)-custompart-example
 ```
 
-if the Build Number format field is empty we default to the `$(buildid)`:
+if the Build Number format field is empty we default to the `$(buildid)`. It can be omitted because it is a default value but I've chosen to make it clear this can be customizable:
 
 ```yaml
-name: $(buildid)-custompart-example
+name: $(buildid)
 ```
 
-Other settings like timeoutinminuts and jobcanceltimeout which are mentioned here are valid for every job inside the Build Definition. I guess I could apply them to every job inside the pipeline if they are not the default settings. This is not implemented yet. See [this topic](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?tabs=yaml&view=azure-devops#timeouts) by Microsoft to see the correct YAML notation if you wish to apply it yourself. If you have specified a Job timeout in the Job part of the pipeline for that specific job it will be converted as a job property.
-
-Demands is something which is also a [pending feature](#Include-agent-pool-demands-for-custom-self-hosted-pools). The demands specified here are valid for the pipeline agent pool specified not the ones in jobs.
+Other settings like timeoutinminuts,jobcanceltimeout and demands which are mentioned here are valid for every job inside the Build Definition. These will be copied over to every job in the originating pipeline. if a different timeout exists on job level that will take precedent over the pipeline timeout. Scoping of this functionality will be Agent Jobs (Microsoft of self-hosted)
 
 ## Assumptions
 
@@ -642,14 +635,6 @@ According to [this](https://developercommunity.visualstudio.com/idea/697467/manu
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority I gave them.
 
-### Include agent pool demands for custom self-hosted pools
-
-Currently demands for Self-hosted pools are ignored. This will be added asap. This will only be implemented for Self-Hosted pools as Microsoft decided that for YAML they only allow demands for custom pools. if you have demands for Microsoft hosted pools (which you can set in the GUI) they will be ingored.
-
-### Apply resource checkout options
-
-stuff like checkout: clean, LFS and other git options which are specified in a build definitions sources part needs to be translated to steps - checkout options.
-
 ### Converted parameters from queue time variables are called as variable instead of a parameter
 
 When converting variables to parameters which have the AllowOveride property and are thus settable at queue time are put into the parameters section of the YAML file.
@@ -671,6 +656,10 @@ Right now all the URL creation function allows for Azure DevOps URL creation. it
 ### Support for TFVC, GitHub, BitBucket source
 
 Right now the use-cases at the clients i've worked with was to deal with Azure DevOps hosted source code. I will need to do investigation / confirmation that this also works if you host your code externally and if not what changes are needed to incorporate this.
+
+### Multi-agent & sliced agent configuration on jobs
+
+multi-agent jobs are not supported. Neither is slicing. You can find more about Multi-Agent config [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#multi-job-configuration) and more on slicing [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#slicing). I have never worked with these setups nor am I aware of many companies using this. When I get some time I will dive into it.
 
 ### Release Definitions
 
