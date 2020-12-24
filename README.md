@@ -6,6 +6,21 @@
 [![PowerShell Gallery - AzDoAPITools](https://img.shields.io/badge/PowerShell%20Gallery-AzDoAPITools-blue.svg)](https://www.powershellgallery.com/packages/AzDoAPITools)
 [![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/PowerShell/PowerShell)
 
+## Version 1.1 Changes
+
+- added Pipeline / Job demands
+- Added Step Properties (checkout, persistcredentials, lfs, submodules etc...)
+- added Agentless pools
+- Added Resource construct for non-AzureDevOps sources
+- Changed Job id / displayName notation (added displayname and use actual API id as id instead of displayName as id)
+- Changed order of triggers according to MS Export Tool ordering
+- Changes order of job properties to MS Export Tool ordering
+- fixed syntax for included / excluded paths and branches notation
+- Fixed rare occurrence where executor of script would happen to be in a DST timezone where the target zone would not be.
+- Fixed empty jobs syntax. will now be converted as empty array [] rather than a started array.
+- Fixed notation for job properties for timeout and canceltimeout.
+- updated documentation
+
 ## Introduction
 
 AzDoAPITools is a project which was born while doing a migration from classical pipelines (GUI-based) to YAML pipelines (Pipeline as code) for a customer. Which is the current function of the published module. The module will convert Task Groups and classical build pipelines to usable all in one YAML pipelines / step templates.
