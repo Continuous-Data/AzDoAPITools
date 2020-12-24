@@ -16,13 +16,15 @@ This module does exactly that and automatically. It currently has two main featu
   - Task Groups: When a Task Group is found it can either be added as \-template: or be expanded and added as \-task:
   - Inputs: Task Group Inputs are converted to template parameters
 - Convert Build Definitions to YAML Pipelines including pipelines properties such as:
+  - Pipelines resources (for non Azure DevOps sources)
   - Triggers: (both Path and Branch)
   - Schedules: (already converted into CRON and UTC w/o DST)
   - Variables: (Secret variables are skipped and settable at queue time will be converted to pipeline parameters)
   - Agent Pools: (both at job and pipeline level)
-  - Jobs: (and interdependendancies between them such as dependancies and conditions)
+  - Jobs: (jop properties, demands and interdependendancies between them such as dependancies and conditions)
   - steps: (including non-default properties, inputs and conditions)
   - Task Groups: When a Task Group is found it can either be added as \-template: or be expanded and added as \-task:
+  - Pipeline properties such as checkout options, lfs, submodules etc.
 
 The result of this conversion can either be used as a PSObject or be converted into a \*.yml file for direct usage. In the future I will create functionality to also import the results of the conversion as a new YAML Pipeline definition inside Azure DevOps. For items such as definition specific properties (triggers, schedules etc.) it will be an option to include them in the YAML file or you wish so (not recommended) have them be part of your YAML Pipeline definition.
 
@@ -315,7 +317,7 @@ pool:
 ![sources](./images/2020-09-10-16-08-53.png)
 *sources properties*
 
-Looking at the Sources section we can see several checkout options. Currently these will be ignored. This is on the [ToDo list](#Apply-resource-checkout-options). After conversion it should look like this:
+Looking at the Sources section we can see several checkout options. These are supported since version 1.1 and will show up in the following syntax if applicaple:
 
 ```yaml
 steps:
@@ -324,7 +326,6 @@ steps:
   fetchDepth: number
   lfs: true | false  
   submodules: true | recursive
-  path: string
   persistCredentials: true | false
 ```
 
@@ -449,9 +450,9 @@ trigger:
     include:
     - refs/heads/master
   paths:
-  - include:
+    include:
     - pathtoinclude
-  - exclude:
+    exclude:
     - pathtoexclude
   batch: true
 ```
@@ -549,9 +550,7 @@ if the Build Number format field is empty we default to the `$(buildid)`. It can
 name: $(buildid)
 ```
 
-Other settings like timeoutinminuts and jobcanceltimeout which are mentioned here are valid for every job inside the Build Definition. I guess I could apply them to every job inside the pipeline if they are not the default settings. This is not implemented yet. See [this topic](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?tabs=yaml&view=azure-devops#timeouts) by Microsoft to see the correct YAML notation if you wish to apply it yourself. If you have specified a Job timeout in the Job part of the pipeline for that specific job it will be converted as a job property.
-
-The demands specified here will be copied over to each job using a Microsoft-Hosted or Self-Hosted Agent.
+Other settings like timeoutinminuts,jobcanceltimeout and demands which are mentioned here are valid for every job inside the Build Definition. These will be copied over to every job in the originating pipeline. if a different timeout exists on job level that will take precedent over the pipeline timeout. Scoping of this functionality will be Agent Jobs (Microsoft of self-hosted)
 
 ## Assumptions
 
@@ -635,10 +634,6 @@ According to [this](https://developercommunity.visualstudio.com/idea/697467/manu
 ## ToDo list
 
 Below is a short To Do list of functionality I wish to implement asap. the order in which they occur here is the priority I gave them.
-
-### Apply resource checkout options
-
-stuff like checkout: clean, LFS and other git options which are specified in a build definitions sources part needs to be translated to steps - checkout options.
 
 ### Converted parameters from queue time variables are called as variable instead of a parameter
 
